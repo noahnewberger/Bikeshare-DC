@@ -2,4 +2,4 @@
 
 Capstone Project for Data Science Certificate Program at Georgetown University School of Continuing Studies.
 
-Our Objective is to forecast demand of DC Capital Bikeshare for Summer/Fall 2018. 
+Our goal is to forecast demand of DC Capital Bikeshare for Summer/Fall 2018. 
