@@ -1,8 +1,8 @@
 import datetime
 import pandas as pd
-import requests
-import os
+import forecastio
 import time
+import os
 
 
 def daily_weather(api_key, d):
@@ -12,20 +12,14 @@ def daily_weather(api_key, d):
     lat = 38.9072
     lng = -77.0369
 
-    # Define Request Path
-    params = {'exclude': 'currently,flags'}
-    unix_time = time.mktime(d.timetuple())
-    loc_date = str(lat) + "," + str(lng) + "," + str(int(unix_time))
-    dark_sky_url = "https://api.darksky.net/forecast"
-    request_path = os.path.join(dark_sky_url, api_key, loc_date)
-
-    # Make Request of API
-    resp = requests.get(request_path, params=params)
+    # Pull Daily forcast from Dark Sky API
+    forecast = forecastio.load_forecast(api_key, lat, lng, time=start_date)
+    daily = forecast.daily()
 
     # Convert daily data dictionary to dataframe
-    daily = resp.json()['daily']['data'][0]
-    daily_df = pd.DataFrame(daily, index=[d])
-    return daily_df
+    daily_data = daily.data[0].d
+    daily_data_df = pd.DataFrame(daily_data, index=[d])
+    return daily_data_df
 
 
 # Define Range of Date to pull forecast
@@ -51,7 +45,7 @@ for api_key in api_key_list:
         delta - datetime.timedelta(days=1)
         print("Count: {}, Date: {}". format(api_counter, d))
         # Break loop if reaching API call max, 975
-        if (api_counter == 975) or (d == end_date):
+        if (api_counter == 980) or (d == end_date):
             start_date = d + datetime.timedelta(days=1)
             break
 
