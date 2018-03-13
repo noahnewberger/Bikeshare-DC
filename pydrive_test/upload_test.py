@@ -6,6 +6,7 @@ gauth.LocalWebserverAuth()  # Creates local webserver and auto handles authentic
 
 drive = GoogleDrive(gauth)
 
-file1 = drive.CreateFile({'title': 'Hello.txt'})  # Create GoogleDriveFile instance with title 'Hello.txt'.
-file1.SetContentString('Hello World!')  # Set content of the file from given string.
+file1 = drive.CreateFile({'title':'Test2.txt',
+        "parents": [{"kind": "drive#fileLink","id": '1VYhVqDrEJJ8wos0AZQOtfnH20nXERfC4'}]})# Create GoogleDriveFile instance with title 'Hello.txt'.
+file1.SetContentString('Success!')  # Set content of the file from given string.
 file1.Upload()
