@@ -2,3 +2,7 @@
 *.zip
 
 *.csv
+
+production/client_secrets\.json
+
+*.json
