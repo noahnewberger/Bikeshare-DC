@@ -37,15 +37,15 @@ end_date = datetime.datetime(2017, 12, 31)
 delta = end_date - start_date
 date_list = [start_date + datetime.timedelta(days=i) for i in range(delta.days + 1)]
 
-#List of APIs to loop through, 1000 calls per API
+# List of APIs to loop through, 1000 calls per API
 api_key_list_id = '1GBquCFcLRWKiVhsYxisyI-ahVDTbPPTQ'
 api_key_list_file = drive.CreateFile({'id': api_key_list_id})
-content = api_key_list_file.GetContentFile( api_key_list_file['title'])
+content = api_key_list_file.GetContentFile(api_key_list_file['title'])
 
 api_key_list = open('Dark_Sky_API.csv').read().splitlines()
 
 # Duplicate api_key_list to match the number of items in the Date Range
-api_key_list_exp = api_key_list * math.floor(len(date_list)/len(api_key_list))
+api_key_list_exp = api_key_list * math.floor(len(date_list) / len(api_key_list))
 
 # Turn date and api key lists into dictionary
 date_dict = dict(zip(date_list, api_key_list_exp))
