@@ -32,8 +32,8 @@ def daily_weather(api_key, d):
 
 
 # Define Range of Date to pull forecast and turn into a list
-start_date = datetime.datetime(2017, 12, 1)
-end_date = datetime.datetime(2017, 12, 31)
+start_date = datetime.datetime(2010, 10, 1)
+end_date = datetime.datetime(2018, 2, 28)
 delta = end_date - start_date
 date_list = [start_date + datetime.timedelta(days=i) for i in range(delta.days + 1)]
 
@@ -61,12 +61,9 @@ for d, api_key in date_dict.items():
 # Concatentate one big dataframe
 results_df = pd.concat(results, axis=0)
 
-# Define Dateline hours
-results_df['daylightHours'] = (results_df['sunsetTime'].astype(int) - results_df['sunriseTime'].astype(int)) / 3600
-
 # Output final dataframe
 TIMESTR = time.strftime("%Y%m%d_%H%M%S")
-outname = "Dark_Sky_2010_2017_" + TIMESTR
+outname = "Dark_Sky_From_" + start_date.strftime('%Y-%m-%d') + "_To_" + end_date.strftime('%Y-%m-%d')
 results_df.to_csv(outname + ".csv", index=True)
 
 # Add CSV to zip
@@ -79,7 +76,7 @@ zf.close()
 # Google Drive folder id
 data_folder = '1aDd5fcdbxJfPUDN0i7thmWcUqx8PRmPv'
 
-file1 = drive.CreateFile({'title': outname,
+file1 = drive.CreateFile({'title': outname + ".zip",
                           "parents": [{"kind": "drive#fileLink", "id": data_folder}]})
 file1.SetContentFile(outname + ".zip")  # Set content of the file from given string.
 file1.Upload()

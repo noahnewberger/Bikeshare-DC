@@ -1,10 +1,11 @@
+# from pydrive.auth import GoogleAuth
+# from pydrive.drive import GoogleDrive
 import requests
 import pandas as pd
 import io
 from datetime import date, timedelta
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-import zipfile
 
 gauth = GoogleAuth()
 gauth.LocalWebserverAuth()  # Creates local webserver and auto handles authentication.
@@ -34,24 +35,19 @@ for i in range(delta.days + 1):
     df_list.append(date_df)
     print("{} processed".format(date))
 
-# Combine and Keep only "empty" and "full" statuses
 combined_df = pd.concat(df_list, axis=0)
+# Keep only "empty" and "full" statuses
 combined_df = combined_df[combined_df['Status'].isin(['empty', 'full'])].drop('Station Name')
 
 # Output dataframe as CSV
-outname = "CaBi_Tracker_Outage_History_From_" + d1.strftime('%Y-%m-%d') + "_To_" + d2.strftime('%Y-%m-%d')
-combined_df.to_csv(outname + ".csv", index=False)
-
-# Add CSV to zip
-compression = zipfile.ZIP_DEFLATED
-zf = zipfile.ZipFile(outname + ".zip", mode='w')
-zf.write(outname + ".csv", compress_type=compression)
-zf.close()
+outname = "CaBi_Tracker_Outage_History_From_" + d1.strftime('%Y-%m-%d') + "_To_" + d2.strftime('%Y-%m-%d') + ".csv"
+combined_df.to_csv(outname, index=False)
 
 # Upload CSV to Google Drive
+
 data_folder = '175Zhy6KRdgOwVhwqeZPANHCv6GvJJfvv'
 
-file1 = drive.CreateFile({'title': outname + ".zip",
+file1 = drive.CreateFile({'title': outname,
                           "parents": [{"kind": "drive#fileLink", "id": data_folder}]})
-file1.SetContentFile(outname + ".zip")  # Set content of the file from given string.
+file1.SetContentString(outname)  # Set content of the file from given string.
 file1.Upload()
