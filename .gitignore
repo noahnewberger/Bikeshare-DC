@@ -6,3 +6,7 @@
 production/client_secrets\.json
 
 *.json
+
+\.env
+
+\.env_readonly
