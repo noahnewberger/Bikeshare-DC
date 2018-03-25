@@ -10,3 +10,5 @@ production/client_secrets\.json
 \.env
 
 \.env_readonly
+
+*.gz

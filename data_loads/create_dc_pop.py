@@ -8,12 +8,10 @@ if __name__ == "__main__":
     conn, cur = uf.aws_connect()
     cur.execute("""
     CREATE TABLE dc_pop (
-        dc_pop_id serial PRIMARY KEY,
-        citypop integer,
+        pop_date timestamp PRIMARY KEY,
+        citypop numeric,
         grow_rate numeric,
-        pct_bike numeric,
-        year integer,
-        month integer
+        pct_bike numeric
     )
     """)
     conn.commit()

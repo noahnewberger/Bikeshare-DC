@@ -22,6 +22,8 @@ This folder will serve as a library of data loads to AWS.
 
 1. nats_games - List of all Nationals Home games from 2010 to 2018.  Datetime of game start, game number(for double header), and game attendance (to be added)
 
+1. acs - American Community Survey data used to generate dc_pop
+
 1. dc_pop - DC population estimates by year and month
 
 1. dc_bike_events
