@@ -6,3 +6,4 @@
 production/client_secrets\.json
 
 *.json
+.env
