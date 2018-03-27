@@ -30,6 +30,4 @@ This folder will serve as a library of data loads to AWS.
 
 1. dc_bike_events - All significant bike events based on the WABA calendar as of 3/25/2018.
 
-1. dc_ngh_clusters - Geocoordinate polygons for the DC Neighborhood clusters
-
 

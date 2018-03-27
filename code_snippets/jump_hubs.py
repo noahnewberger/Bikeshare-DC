@@ -1,13 +1,6 @@
 import requests
-from dotenv import load_dotenv
-from pathlib import Path
+import util_functions as uf
 import os
-
-
-def set_env_path():
-    # set the environment path
-    env_path = Path('..') / '.env'
-    load_dotenv(dotenv_path=env_path)
 
 
 def jump_proxy():
@@ -19,7 +12,7 @@ def jump_proxy():
 
 
 if __name__ == "__main__":
-    set_env_path()
+    uf.set_env_path()
     jump_resp = jump_proxy()
     print(jump_resp)
 
