@@ -12,6 +12,12 @@ This folder will serve as a library of data loads to AWS.
 
 1. cabi_stations_temp - Capital Bikeshare station information pulled from CaBi API 3/25/2018.  Will ultimately be replaced by data from DDOT.
 
+1. cabi_stations_geo_temp - Capital Bikeshare station information pulled from CaBi API 3/25/2018 + geopolitical identifiers from open data DD
+    # Neighborhood Cluster Name - "cluster_name", ex. "Cluster 6"
+    # Neighborhod Cluster Description = "ngh_names", ex. "Dupont Circle, Connecticut Avenue/K Street"
+    # Advisory Neighborhood Commissioner District - "anc", ex. "2B"
+    # Ward - "ward", ex. "2"
+
 1. cabi_pricing_model - Capital Bikeshare overage pricing data for up to 24 hours of usage for both member and day pass users as of 3/25/2018.
 
 1. dockless_pricing_model - Pricing data all dockless except for Jump bike for up to 24 hours of usage.
