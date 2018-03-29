@@ -1,14 +1,9 @@
-
-*.zip
-
+.env
 *.csv
-
-production/client_secrets\.json
+code_snippets/__pycache__/util_functions.cpython-36.pyc
 
 *.json
 
-\.env
+*.gz
 
 \.env_readonly
-
-*.gz
