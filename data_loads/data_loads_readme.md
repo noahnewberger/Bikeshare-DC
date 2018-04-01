@@ -22,6 +22,8 @@ This folder will serve as a library of data loads to AWS.
 
 1. dockless_pricing_model - Pricing data all dockless except for Jump bike for up to 24 hours of usage.
 
+1. jump_pricing_model - Pricing data for Jump Bikes, need to incorporate hub docking discount when using in Python scripts.
+
 ## Secondary Data (Weather, DC Population, Etc).
 
 1. dark_sky_raw - Dark Sky API data from October 2010 to March 22, 2018.  Will be updated for rest of pilot period  at some point.
