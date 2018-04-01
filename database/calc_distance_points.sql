@@ -1,0 +1,5 @@
+﻿
+SELECT ST_Distance(
+		ST_GeogFromText('SRID=4326;POINT(-77.05332 38.85725)'),
+		ST_GeogFromText('SRID=4326;POINT(-77.049232 38.856425)')
+	);
