@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     # Gather Outage data
     start_date = datetime.datetime(2011, 5, 11)
-    end_date = datetime.datetime(2018, 4, 2)
+    end_date = datetime.datetime(2018, 3, 31)
     date_list = date_list(start_date, end_date)
     df_list = gather_out_data(date_list)
 
@@ -51,10 +51,8 @@ if __name__ == "__main__":
     combined_df = combined_df[combined_df['Terminal Number'].astype(str).str.isdigit()]
 
     # Add outage_id continuing from last record in AWS table
-    out_id_df = pd.read_sql("""SELECT outage_id from cabi_out_hist order by outage_id desc LIMIT 1 """, con=conn)
-    last_outage_id = out_id_df['outage_id'].iloc[0]
     combined_df.reset_index(inplace=True)
-    combined_df['outage_id'] = combined_df.index + 1 + last_outage_id
+    combined_df['outage_id'] = combined_df.index + 1
     # Drop unneeded fields
     combined_df.drop(['index', 'Station Name'], axis=1, inplace=True)
 

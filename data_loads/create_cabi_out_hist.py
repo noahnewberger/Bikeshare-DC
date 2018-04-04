@@ -7,12 +7,14 @@ if __name__ == "__main__":
     uf.set_env_path()
     conn, cur = uf.aws_connect()
     cur.execute("""
+    DROP TABLE cabi_out_hist;
     CREATE TABLE cabi_out_hist(
-        terminal_number integer,
+        terminal_number varchar(20),
         status varchar(20),
         start_time timestamp,
         end_time timestamp,
-        duration integer
+        duration integer,
+        outage_id integer PRIMARY KEY
         )
     """)
     conn.commit()
