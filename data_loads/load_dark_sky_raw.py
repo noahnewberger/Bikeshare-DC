@@ -27,8 +27,8 @@ if __name__ == "__main__":
     conn, cur = uf.aws_connect()
 
     # Define Range of Date to pull forecast and turn into a list
-    start_date = datetime.datetime(2018, 1, 1)
-    end_date = datetime.datetime(2018, 3, 22)
+    start_date = datetime.datetime(2018, 3, 23)
+    end_date = datetime.datetime(2018, 3, 31)
     delta = end_date - start_date
     date_list = [start_date + datetime.timedelta(days=i) for i in range(delta.days + 1)]
     # Define API Key List
@@ -43,12 +43,20 @@ if __name__ == "__main__":
         print('{} has been processed'.format(d))
     # Concatentate one big dataframe
     results_df = pd.concat(results, axis=0)
+    results_df.columns = [x.lower() for x in results_df.columns]
+    # Pull first record from current dark sky raw data and concatentate current pull to ensure all fields are populated
+    first_record_df = pd.read_sql("""SELECT * from dark_sky_raw LIMIT 1""", con=conn)
+    results_df = pd.concat([results_df, first_record_df], axis=0)
+    results_df = results_df[:-1]
     # Fill in zeros missing data
     results_df.fillna(0, inplace=True)
     # Convert precipIntensityMaxTime to integer
-    results_df['precipIntensityMaxTime'] = results_df['precipIntensityMaxTime'].astype('int')
+    results_df['precipintensitymaxtime'] = results_df['precipintensitymaxtime'].astype('int')
     # Drop weather fields new to 2018
-    results_df = results_df.drop(['ozone', 'uvIndex', 'uvIndexTime', 'windGust', 'windGustTime'], axis=1)
+    results_df = results_df.drop(['ozone', 'uvindex', 'uvindextime', 'windgust', 'windgusttime', 'time'], axis=1)
+    # Reorder columns based on current table
+    results_df['day_time'] = results_df['day_time'].astype(int)
+    results_df = results_df[first_record_df.columns]
     # Output final dataframe
     TIMESTR = time.strftime("%Y%m%d_%H%M%S")
     outname = "Dark_Sky_From_" + start_date.strftime('%Y-%m-%d') + "_To_" + end_date.strftime('%Y-%m-%d')

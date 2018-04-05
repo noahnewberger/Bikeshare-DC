@@ -7,3 +7,5 @@ code_snippets/__pycache__/util_functions.cpython-36.pyc
 *.gz
 
 \.env_readonly
+
+data_loads/__pycache__/util_functions\.cpython-36\.pyc
