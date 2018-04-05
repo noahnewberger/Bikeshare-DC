@@ -1,0 +1,12 @@
+﻿SELECT dan.*, 
+station.name,
+station.lon,
+station.lat,
+ST_Distance(dan.location, ST_SetSRID(st_makepoint(station.lon, station.lat),4326)) * 0.000621371 as dist_miles
+FROM dan_dockless as dan
+CROSS JOIN LATERAL
+(SELECT *
+   FROM cabi_stations_temp
+   ORDER BY
+     dan.location <-> ST_SetSRID(st_makepoint(lon, lat),4326)
+   LIMIT 1) as station;

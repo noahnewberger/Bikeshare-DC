@@ -3,6 +3,8 @@ import pandas as pd
 import util_functions as uf
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
+import itertools
+from geopy.distance import vincenty
 
 
 def extract_json(json_id):
@@ -26,8 +28,17 @@ def extract_json(json_id):
 
 def get_aws_station_info():
     # Bring in station information and assign cluster to each
-    stations_df = pd.read_sql("""SELECT * from cabi_stations_temp""", con=conn)
+    stations_df = pd.read_sql("""SELECT cabi_stations_temp.*, cabi_system.code AS region_code
+                                 FROM cabi_stations_temp
+                                 LEFT JOIN cabi_system
+                                 ON cabi_stations_temp.region_id = cabi_system.region_id""", con=conn)
     return stations_df
+
+
+def expand_grid(data_dict):
+    # Expands the start and stop stations to have every combination as rows
+    rows = itertools.product(*data_dict.values())
+    return pd.DataFrame.from_records(rows, columns=data_dict.keys())
 
 
 def define_final_vars(json_name, geo_row, short_name):
@@ -81,9 +92,27 @@ if __name__ == '__main__':
     combined_assigned_df = pd.concat(combined_assigned_df_list, axis=1).drop(['ngh_short_name'], axis=1)
     # Merge Assigned cluster back onto station information by short name
     stations_df = stations_df.merge(combined_assigned_df, on='short_name', how='left').drop(['eightd_station_services'], axis=1)
+    # Expand station information to have each station be both a start and end station
+    start_stations_df = stations_df.copy()
+    start_stations_df.columns = ["start_" + str(col) for col in start_stations_df.columns]
+    end_stations_df = stations_df.copy()
+    end_stations_df.columns = ["end_" + str(col) for col in end_stations_df.columns]
+    expanded_df = expand_grid(dict(pd.DataFrame(start_stations_df['start_short_name']).to_dict('list'), **pd.DataFrame(end_stations_df['end_short_name']).to_dict('list')))
+    # Merge on start and end station DFs
+    expanded_df = expanded_df.merge(start_stations_df, on='start_short_name', how='left')
+    expanded_df = expanded_df.merge(end_stations_df, on='end_short_name', how='left')
+    # Calculate Distance between start and end station
+    dist_miles_list = []
+    for enum, row in expanded_df.iterrows():
+        start_loc = (row['start_lat'], row['start_lon'])
+        end_loc = (row['end_lat'], row['end_lon'])
+        dist_miles = vincenty(start_loc, end_loc).miles
+        dist_miles_list.append(dist_miles)
+    dist_miles_df = pd.DataFrame({'dist_miles': dist_miles_list})
+    expanded_df = pd.concat([expanded_df, dist_miles_df], axis=1)
     # Output dataframe as CSV
     outname = "CaBi_Stations_Geo_Temp"
-    stations_df.to_csv(outname + ".csv", index=False, sep='|')
+    expanded_df.to_csv(outname + ".csv", index=False, sep='|')
     # Load to Database
     uf.aws_load(outname, "cabi_stations_geo_temp", cur)
     # Commit changes to database
