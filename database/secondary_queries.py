@@ -3,7 +3,7 @@ import pandas as pd
 
 def dark_sky(conn):
     # All weather data from Dark Sky
-    df = pd.read_sql("""SELECT  weather_date as date,
+    df = pd.read_sql("""SELECT weather_date as date,
                         EXTRACT('year' FROM weather_date) as year,
                         EXTRACT('quarter' FROM weather_date) as quarter,
                         EXTRACT('month' FROM weather_date) as month,
@@ -37,6 +37,42 @@ def dark_sky(conn):
                         windbearing,
                         windspeed
                         FROM dark_sky_raw
-                        /*WHERE weather_date >= '2017-09-20'*/;
                         """, con=conn)
     return df
+
+
+def nats_games(conn):
+    # Count of National Games per day 2010-2018 (attendance data to be added later)
+    df = pd.read_sql("""SELECT game_datetime::date as date,
+                        count(*) as nats_games
+                        from nats_games
+                        group by 1
+                        order by 1;
+                        """, con=conn)
+    return df
+
+
+def dc_pop(conn):
+    # DC Monthly Population Estimates
+    df = pd.read_sql("""SELECT
+                        EXTRACT(year FROM pop_date) as year,
+                        EXTRACT(month from pop_date) as month,
+                        citypop as dc_pop
+                        FROM dc_pop
+                        WHERE pop_date::date >= '2010-10-01'
+                        ORDER BY EXTRACT(year FROM pop_date), EXTRACT(month from pop_date)
+                        """, con=conn)
+    return df
+
+
+def dc_bike_events(conn):
+    # DC Bike Events 2014-2018
+    df = pd.read_sql("""SELECT
+                        final_date AS date,
+                        1 AS dc_bike_event
+                        FROM bike_events
+                        ORDER BY final_date;
+                        """, con=conn)
+    return df
+
+
