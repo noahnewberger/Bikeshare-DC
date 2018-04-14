@@ -64,3 +64,38 @@ def dockless_overlap(conn):
                         ORDER BY 1, 2
                      """, con=conn)
     return df
+
+
+def dockless_duration_cost(conn):
+    # Average trip duration and cost where trips are great than a minute and less than a day.  Mobike not included
+    df = pd.read_sql("""SELECT DISTINCT
+                        startutc::date as date,
+                        operatorclean as operator,
+                        /* Convert Duration to Seconds*/
+                        AVG(EXTRACT('hours' FROM (endutc - startutc)) * 3600 +
+                        EXTRACT('minutes' FROM (endutc - startutc)) * 60 +
+                        EXTRACT('seconds' FROM (endutc - startutc))) as avg_duration,
+                        /* Assign appropriate price based on operator*/
+                        AVG(COALESCE(
+                        CASE WHEN operatorclean = 'lime' THEN price.limebike ELSE NULL END,
+                        CASE WHEN operatorclean = 'ofo' THEN price.ofo ELSE NULL END,
+                        CASE WHEN operatorclean = 'spin' THEN price.spin ELSE NULL END,
+                        CASE WHEN operatorclean = 'jump' THEN jump_price.cost ELSE NULL END)) as avg_cost
+                        FROM dockless_trips as trip_dur
+                        /*Join on non-jump operator pricing*/
+                        LEFT JOIN dockless_price as price
+                        ON trip_dur.operatorclean != 'jump' AND EXTRACT('hours' FROM (endutc - startutc)) * 3600 +
+                        EXTRACT('minutes' FROM (endutc - startutc)) * 60 +
+                        EXTRACT('seconds' FROM (endutc - startutc)) BETWEEN price.min_seconds and price.max_seconds
+                        /*Join on jump operator pricing*/
+                        LEFT JOIN jump_price as jump_price
+                        ON trip_dur.operatorclean = 'jump' AND EXTRACT('hours' FROM (endutc - startutc)) * 3600 +
+                        EXTRACT('minutes' FROM (endutc - startutc)) * 60 +
+                        EXTRACT('seconds' FROM (endutc - startutc)) BETWEEN jump_price.min_seconds and jump_price.max_seconds
+                        WHERE endutc > startutc
+                        AND '1 minute' < endutc - startutc
+                        AND endutc - startutc < '1 day'
+                        AND operatorclean != 'mobike'
+                        GROUP BY 1, 2
+                     """, con=conn)
+    return df
