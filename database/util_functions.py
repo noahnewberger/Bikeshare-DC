@@ -12,7 +12,7 @@ def set_env_path():
 
 def aws_connect():
     # establish connection to AWS database instance
-    host = "capstone-bikeshare.cs9te7lm3pt2.us-east-1.rds.amazonaws.com"
+    host = "bikeshare-restored.cs9te7lm3pt2.us-east-1.rds.amazonaws.com"
     port = 5432
     database = "bikeshare"
     user = os.environ.get("AWS_USER")

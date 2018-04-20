@@ -171,18 +171,21 @@ if __name__ == "__main__":
     cabi_outhist_unstack['cabi_dur_full_tot'] = cabi_sum(sum_type='full', df=cabi_outhist_unstack)
 
     # Merge all CaBI DFs together
-    cabi_dfs = [cabi_bikes_df,
-                cabi_stations_unstack,
-                by_tot_df,
+    cabi_dfs = [by_tot_df,
                 by_mem_type_unstack,
                 by_region_df_unstack,
                 by_region_member_df_unstack,
+                cabi_bikes_df,
+                cabi_stations_unstack,
                 cabi_outhist_unstack]
-    cabi_df = reduce(lambda left, right: pd.merge(left, right, how="left", left_index=True, right_index=True), cabi_dfs)
-    cabi_df.drop_duplicates(inplace=True)
+
+    cabi_df = pd.concat(cabi_dfs, axis=1)
+    cabi_df.fillna(0, inplace=True)
+    print(len(cabi_df))
     # Calculate CaBi Syste Utilization Rate
     cabi_df['cabi_util_rate'] = cabi_df['cabi_trips'] / cabi_df['cabi_bikes_avail']
     cabi_df.to_csv("cabi.csv", index=True, sep='|')
+    print(len(cabi_df))
 
     # Merge all DFs together
     final_dfs = [second_df, cabi_df, dless_df]

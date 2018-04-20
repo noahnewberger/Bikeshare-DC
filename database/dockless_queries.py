@@ -74,13 +74,13 @@ def dockless_duration_cost(conn):
                         /* Convert Duration to Seconds*/
                         AVG(EXTRACT('hours' FROM (endutc - startutc)) * 3600 +
                         EXTRACT('minutes' FROM (endutc - startutc)) * 60 +
-                        EXTRACT('seconds' FROM (endutc - startutc))) as avg_duration,
+                        EXTRACT('seconds' FROM (endutc - startutc))) as dless_dur,
                         /* Assign appropriate price based on operator*/
                         AVG(COALESCE(
                         CASE WHEN operatorclean = 'lime' THEN price.limebike ELSE NULL END,
                         CASE WHEN operatorclean = 'ofo' THEN price.ofo ELSE NULL END,
                         CASE WHEN operatorclean = 'spin' THEN price.spin ELSE NULL END,
-                        CASE WHEN operatorclean = 'jump' THEN jump_price.cost ELSE NULL END)) as avg_cost
+                        CASE WHEN operatorclean = 'jump' THEN jump_price.cost ELSE NULL END)) as dless_cost
                         FROM dockless_trips as trip_dur
                         /*Join on non-jump operator pricing*/
                         LEFT JOIN dockless_price as price
