@@ -24,7 +24,7 @@ def aws_connect():
 
 def aws_load(df_name, tbl_name, cur):
     # Load dataframe of data to AWS table
-    with open(df_name + ".csv", 'r') as f:
+    with open(os.path.join("data", df_name + ".csv"), 'r') as f:
         # Skip the header row.
         next(f)
         cur.copy_from(f, tbl_name, sep='|')

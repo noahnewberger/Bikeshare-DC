@@ -24,11 +24,13 @@ This folder will serve as a library of data loads to AWS.
 
 1. jump_pricing_model - Pricing data for Jump Bikes, need to incorporate hub docking discount when using in Python scripts.
 
+1. dockless_trips - Dockles trip data through February 2018 (no Spin Jan data and no Mobike Feb data)
+
+1. dockless_trips_geo - Calculates trip distance, distance to closest start and end cabi station and keeps vital fields from dockless_trips.  Jump data not currently included due to rounding issues with lat and lon that will hopefully be resolved in the future.
+
 ## Secondary Data (Weather, DC Population, Etc).
 
 1. dark_sky_raw - Dark Sky API data from October 2010 to March 22, 2018.  Will be updated for rest of pilot period  at some point.
-
-1. dark_sky_final[TODO] - dark_sky_raw + further processing
 
 1. nats_games - List of all Nationals Home games from 2010 to 2018.  Datetime of game start, game number(for double header), and game attendance (to be added)
 
@@ -36,6 +38,6 @@ This folder will serve as a library of data loads to AWS.
 
 1. dc_pop - DC population estimates by year and month
 
-1. dc_bike_events - All significant bike events based on the WABA calendar as of 3/25/2018.
+1. bike_events - All significant bike events based on the WABA calendar as of 3/25/2018.
 
 

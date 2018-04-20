@@ -38,6 +38,9 @@ if __name__ == "__main__":
     outname = "Cabi_Trips_MemberType"
     combined_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
 
+    import sys
+    sys.exit()
+
     # Load to Database
     uf.aws_load(outname, "cabi_trips_membertype", cur)
 

@@ -33,6 +33,21 @@ def gather_out_data(date_list):
     return df_list
 
 
+def create_cabi_out_hist(cur):
+    # This script creates the Cabi Outage Hitory AWS table
+    cur.execute("""
+    DROP TABLE cabi_out_hist;
+    CREATE TABLE cabi_out_hist(
+        terminal_number varchar(20),
+        status varchar(20),
+        start_time timestamp,
+        end_time timestamp,
+        duration integer,
+        outage_id integer PRIMARY KEY
+        )
+    """)
+
+
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
@@ -57,13 +72,12 @@ if __name__ == "__main__":
     combined_df['outage_id'] = combined_df.index + 1 + last_outage_id
     # Drop unneeded fields
     combined_df.drop(['index', 'Station Name'], axis=1, inplace=True)
-
     # Output dataframe as CSV
     outname = "CaBi_Tracker_Outage_History_From_" + start_date.strftime('%Y-%m-%d') + "_To_" + end_date.strftime('%Y-%m-%d')
     combined_df.to_csv(outname + ".csv", index=False, sep='|')
-
+    # Create Database
+    create_cabi_out_hist(cur)
     # Load to Database
     uf.aws_load(outname, "cabi_out_hist", cur)
-
     # Commit changes to database
     conn.commit()
