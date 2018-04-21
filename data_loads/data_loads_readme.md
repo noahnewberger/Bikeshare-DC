@@ -28,6 +28,11 @@ This folder will serve as a library of data loads to AWS.
 
 1. dockless_trips_geo - Calculates trip distance, distance to closest start and end cabi station and keeps vital fields from dockless_trips.  Jump data not currently included due to rounding issues with lat and lon that will hopefully be resolved in the future.
 
+1. ofo_users - Ofo operator data, users trips by user id and month, as of April have data from October through Febrary
+
+1. jump_users - Jump operator data, users trips by user id and month, as of April have data from September through Febrary
+
+
 ## Secondary Data (Weather, DC Population, Etc).
 
 1. dark_sky_raw - Dark Sky API data from October 2010 to March 22, 2018.  Will be updated for rest of pilot period  at some point.
