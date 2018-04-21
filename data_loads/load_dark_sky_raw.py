@@ -21,14 +21,58 @@ def daily_weather(api_key, d):
     return daily_data_df
 
 
+def create_dark_sky_raw(cur):
+    # This script creates the CaBi Stations Geo Temp AWS table
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS dark_sky_raw(
+        apparentTemperatureHigh numeric,
+        apparentTemperatureHighTime integer,
+        apparentTemperatureLow numeric,
+        apparentTemperatureLowTime integer,
+        apparentTemperatureMax numeric,
+        apparentTemperatureMaxTime integer,
+        apparentTemperatureMin numeric,
+        apparentTemperatureMinTime integer,
+        cloudCover numeric,
+        dewPoint numeric,
+        humidity numeric,
+        icon varchar(500),
+        moonPhase numeric,
+        precipAccumulation numeric,
+        precipIntensity numeric,
+        precipIntensityMax numeric,
+        precipIntensityMaxTime integer,
+        precipProbability numeric,
+        precipType varchar(20),
+        pressure numeric,
+        summary varchar(500),
+        sunriseTime integer,
+        sunsetTime integer,
+        temperatureHigh numeric,
+        temperatureHighTime integer,
+        temperatureLow numeric,
+        temperatureLowTime integer,
+        temperatureMax numeric,
+        temperatureMaxTime integer,
+        temperatureMin numeric,
+        temperatureMinTime integer,
+        day_time integer,
+        visibility numeric,
+        weather_date date PRIMARY KEY UNIQUE NOT NULL,
+        windBearing numeric,
+        windSpeed numeric
+        )
+    """)
+
+
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
     conn, cur = uf.aws_connect()
 
     # Define Range of Date to pull forecast and turn into a list
-    start_date = datetime.datetime(2018, 3, 23)
-    end_date = datetime.datetime(2018, 3, 31)
+    start_date = datetime.datetime(2010, 9, 20)
+    end_date = datetime.datetime(2010, 9, 30)
     delta = end_date - start_date
     date_list = [start_date + datetime.timedelta(days=i) for i in range(delta.days + 1)]
     # Define API Key List
@@ -53,14 +97,19 @@ if __name__ == "__main__":
     # Convert precipIntensityMaxTime to integer
     results_df['precipintensitymaxtime'] = results_df['precipintensitymaxtime'].astype('int')
     # Drop weather fields new to 2018
-    results_df = results_df.drop(['ozone', 'uvindex', 'uvindextime', 'windgust', 'windgusttime', 'time'], axis=1)
+    drop_cols = ['ozone', 'uvindex', 'uvindextime', 'windgust', 'windgusttime', 'time']
+    for drop_col in drop_cols:
+        if drop_col in results_df.columns:
+            results_df = results_df.drop([drop_col], axis=1)
     # Reorder columns based on current table
     results_df['day_time'] = results_df['day_time'].astype(int)
     results_df = results_df[first_record_df.columns]
     # Output final dataframe
     TIMESTR = time.strftime("%Y%m%d_%H%M%S")
     outname = "Dark_Sky_From_" + start_date.strftime('%Y-%m-%d') + "_To_" + end_date.strftime('%Y-%m-%d')
-    results_df.to_csv(outname + ".csv", index=False, sep='|')
+    results_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
+    # Create Database
+    create_dark_sky_raw(cur)
     # Load to Database
     uf.aws_load(outname, "dark_sky_raw", cur)
     # Commit changes to database

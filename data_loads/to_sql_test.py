@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import util_functions as uf
+from sqlalchemy import create_engine
 
 
 def pull_region_info():
@@ -26,6 +27,20 @@ def region_code():
 
 
 if __name__ == "__main__":
+
+    DB_TYPE = 'postgresql'
+    DB_DRIVER = 'psycopg2'
+    DB_USER = 
+    DB_PASS = 
+    DB_HOST = 'capstone-bikeshare.cs9te7lm3pt2.us-east-1.rds.amazonaws.com'
+    DB_PORT = '5432'
+    DB_NAME = 'bikeshare'
+    POOL_SIZE = 50
+    SQLALCHEMY_DATABASE_URI = '%s+%s://%s:%s@%s:%s/%s' % (DB_TYPE, DB_DRIVER, DB_USER,
+                                                          DB_PASS, DB_HOST, DB_PORT, DB_NAME)
+    ENGINE = create_engine(
+        SQLALCHEMY_DATABASE_URI, pool_size=POOL_SIZE, max_overflow=0)
+
     # Connect to AWS
     uf.set_env_path()
     conn, cur = uf.aws_connect()
@@ -38,6 +53,8 @@ if __name__ == "__main__":
     outname = "CaBi_System"
     regions_df.to_csv(outname + ".csv", index=False, sep='|')
     # Load to Database
-    uf.aws_load(outname, "cabi_system", cur)
+    # uf.aws_load(outname, "cabi_system", cur)
+    regions_df.to_sql("cabi_system_test", ENGINE, if_exists='replace', index=False)
+
     # Commit changes to database
     conn.commit()

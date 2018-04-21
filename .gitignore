@@ -15,3 +15,11 @@ data_loads/\.~lock\.dockless_summary_20180403_tmp\.csv#
 *.png
 
 *.pyc
+
+database/Archive/db_built_test\.py
+
+*.xlsx
+
+*.zip
+
+*.txt

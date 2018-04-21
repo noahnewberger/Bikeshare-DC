@@ -1,7 +1,18 @@
 import pandas as pd
 import util_functions as uf
 
-# This script loads data to the dark_sky_raw AWS table
+
+def create_cabi_price(cur):
+    # This script creates the CaBi Price AWS table
+    cur.execute("""
+    DROP TABLE cabi_price;
+    CREATE TABLE cabi_price(
+        min_seconds integer PRIMARY KEY,
+        max_seconds integer,
+        casual_cost numeric,
+        member_cost numeric
+        )
+    """)
 
 
 if __name__ == "__main__":
@@ -14,6 +25,8 @@ if __name__ == "__main__":
     # Output final dataframe
     outname = csv_name + "pipe_delimited"
     overage_df.to_csv(outname + ".csv", index=False, sep='|')
+    # Create Database
+    create_cabi_price(cur)
     # Load to Database
     uf.aws_load(outname, "cabi_price", cur)
     # Commit changes to database

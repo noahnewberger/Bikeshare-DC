@@ -12,7 +12,7 @@ def set_env_path():
 
 def aws_connect():
     # establish connection to AWS database instance
-    host = "capstone-bikeshare.cs9te7lm3pt2.us-east-1.rds.amazonaws.com"
+    host = "bikeshare-restored.cs9te7lm3pt2.us-east-1.rds.amazonaws.com"
     port = 5432
     database = "bikeshare"
     user = os.environ.get("AWS_USER")
@@ -24,7 +24,7 @@ def aws_connect():
 
 def aws_load(df_name, tbl_name, cur):
     # Load dataframe of data to AWS table
-    with open(df_name + ".csv", 'r') as f:
+    with open(os.path.join("data", df_name + ".csv"), 'r') as f:
         # Skip the header row.
         next(f)
         cur.copy_from(f, tbl_name, sep='|')

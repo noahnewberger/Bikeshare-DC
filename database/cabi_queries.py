@@ -19,14 +19,14 @@ def cabi_trips_by_region_member(conn):
                              ELSE price.casual_cost + 2 END) as cabi_trip_cost_tot
                         from cabi_trips as trips
                         /* Join region to start station*/
-                        LEFT JOIN
+                        JOIN
                         (SELECT distinct short_name, lat, lon, cabi_system.code AS region_code
                               FROM cabi_stations_temp
                               LEFT JOIN cabi_system
                               ON cabi_stations_temp.region_id = cabi_system.region_id) as start_st
                         ON trips.start_station = start_st.short_name
                         /* Join region to end station*/
-                        LEFT JOIN
+                        JOIN
                         (SELECT distinct short_name, lat, lon, cabi_system.code AS region_code
                               FROM cabi_stations_temp
                               LEFT JOIN cabi_system
@@ -36,7 +36,7 @@ def cabi_trips_by_region_member(conn):
                         LEFT JOIN cabi_price as price
                         ON EXTRACT('epoch' FROM (trips.end_date - trips.start_date)) BETWEEN price.min_seconds AND price.max_seconds
                         /*TEMPORARY where statement for efficient testing*/
-                        WHERE trips.start_date::date >= '2017-09-20'
+                        /*WHERE trips.start_date::date >= '2017-09-20'*/
                         GROUP by 1, 2, 3;
                  """, con=conn)
     return df
@@ -56,7 +56,7 @@ def cabi_bikes_available(conn):
                             GROUP BY 1) as cabi_bikes
                           ON ds.weather_date BETWEEN cabi_bikes.bike_min_date AND cabi_bikes.bike_max_date
                           /*TEMPORARY where statement for efficient testing*/
-                          WHERE ds.weather_date >= '2017-09-20'
+                          /*WHERE ds.weather_date >= '2017-09-20'*/
                           GROUP BY 1;
                      """, con=conn)
     return df
@@ -92,7 +92,7 @@ def cabi_stations_available(conn):
                             FROM cabi_trips
                             GROUP BY 1)) as stations
                           /* Bring on Region Code from cabi station and system API data*/
-                          LEFT JOIN (SELECT distinct
+                          JOIN (SELECT distinct
                                      short_name,
                                      capacity,
                                      cabi_system.code AS region_code
@@ -105,7 +105,7 @@ def cabi_stations_available(conn):
                           ORDER BY 1, 2)) as cabi_stations
                         ON ds.weather_date BETWEEN cabi_stations.station_min_date AND cabi_stations.station_max_date
                         /*TEMPORARY where statement for efficient testing*/
-                        WHERE ds.weather_date >= '2017-09-20'
+                        /*WHERE ds.weather_date >= '2017-09-20'*/
                         GROUP BY 1, 2;
                         """, con=conn)
     return df
@@ -120,7 +120,7 @@ def cabi_outage_history(conn):
                         SUM(EXTRACT('epoch' FROM (out_hist.end_time - out_hist.start_time))) as cabi_dur
                         FROM cabi_out_hist as out_hist
                         /* Bring on Region Code from cabi station and system API data*/
-                        LEFT JOIN (SELECT distinct
+                        JOIN (SELECT distinct
                               short_name,
                               cabi_system.code AS region_code
                               FROM cabi_stations_temp
@@ -128,7 +128,7 @@ def cabi_outage_history(conn):
                                     ON cabi_stations_temp.region_id = cabi_system.region_id) as region_code
                         ON out_hist.terminal_number = region_code.short_name
                         /*TEMPORARY where statement for efficient testing*/
-                        WHERE out_hist.start_time::date >= '2017-09-20'
+                        /*WHERE out_hist.start_time::date >= '2017-09-20'*/
                         GROUP BY 1, 2, 3;
                         """, con=conn)
     return df

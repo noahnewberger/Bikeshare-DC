@@ -64,6 +64,18 @@ def combine_dates():
     return sign_events_df['combine_date'].dt.date
 
 
+def create_bike_events(cur):
+    # This script creates the bike events AWS table
+    cur.execute("""
+    DROP TABLE bike_events;
+    CREATE TABLE bike_events(
+        id  varchar(500) PRIMARY KEY,
+        final_date  date,
+        summary varchar(500)
+        )
+    """)
+
+
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
@@ -87,6 +99,8 @@ if __name__ == "__main__":
     # Output significant events
     outname = "WABA_Significant_Events" + TIMESTR
     sign_events_df.to_csv(outname + ".csv", index=False, sep='|')
+    # Create Database
+    create_bike_events(cur)
     # Load to Database
     uf.aws_load(outname, "bike_events", cur)
     # Commit changes to database

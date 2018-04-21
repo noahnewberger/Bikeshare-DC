@@ -5,7 +5,7 @@ import geopandas as gpd
 from shapely.geometry import Point, Polygon
 import itertools
 from geopy.distance import vincenty
-
+import os
 
 def extract_json(json_id):
     # Loop through each feature in GeoJson and pull our metadata and polygon
@@ -72,6 +72,45 @@ def assign_polygon():
     return assigned_df
 
 
+def create_cabi_stations_geo_temp(cur):
+    # This script creates the CaBi Stations Geo Temp AWS table
+    cur.execute("""
+    DROP TABLE cabi_stations_geo_temp;
+    CREATE TABLE cabi_stations_geo_temp(
+        start_short_name varchar(20),
+        end_short_name varchar(20),
+        start_capacity integer,
+        start_eightd_has_key_dispenser boolean,
+        start_lat numeric,
+        start_lon numeric,
+        start_name varchar(200),
+        start_region_id integer,
+        start_rental_methods varchar(200),
+        start_rental_url varchar(200),
+        start_station_id integer,
+        start_region_code varchar(10),
+        start_cluster_name varchar(20),
+        start_ngh_names varchar(300),
+        start_anc varchar(10),
+        start_ward varchar(10),
+        end_capacity integer,
+        end_eightd_has_key_dispenser boolean,
+        end_lat numeric,
+        end_lon numeric,
+        end_name varchar(200),
+        end_region_id integer,
+        end_rental_methods varchar(200),
+        end_rental_url varchar(200),
+        end_station_id integer,
+        end_region_code varchar(10),
+        end_cluster_name varchar(20),
+        end_ngh_names varchar(300),
+        end_anc varchar(10),
+        end_ward varchar(10),
+        dist_miles numeric)
+            """)
+
+
 if __name__ == '__main__':
     # Set environmental variable
     uf.set_env_path()
@@ -112,7 +151,9 @@ if __name__ == '__main__':
     expanded_df = pd.concat([expanded_df, dist_miles_df], axis=1)
     # Output dataframe as CSV
     outname = "CaBi_Stations_Geo_Temp"
-    expanded_df.to_csv(outname + ".csv", index=False, sep='|')
+    expanded_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
+    # Create Database
+    create_cabi_stations_geo_temp(cur)
     # Load to Database
     uf.aws_load(outname, "cabi_stations_geo_temp", cur)
     # Commit changes to database
