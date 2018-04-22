@@ -99,3 +99,101 @@ def dockless_duration_cost(conn):
                         GROUP BY 1, 2
                      """, con=conn)
     return df
+
+
+def dockless_active_users(conn):
+    # Activate users by dockless operator
+    df = pd.read_sql("""SELECT * FROM crosstab($$
+                        SELECT
+                        ds.weather_date as date,
+                        dless_users.operatorclean,
+                        COUNT(DISTINCT dless_users.userid) as dless_active_users
+                        FROM dark_sky_raw as ds
+                        /*lime, spin and mobike users*/
+                        LEFT JOIN((select distinct
+                        max_month_trips.operatorclean,
+                        max_month_trips.userid,
+                        min(max_month_trips.start_active_date) as start_active_date,
+                        max(max_month_trips.end_active_date)::date as end_active_date
+                        from (select distinct
+                            trips.operatorclean,
+                            trips.userid,
+                            max_month.max_month,
+                            min(trips.startutc)::date as start_active_date,
+                            /*IF LAST month of available data then pad to end of month*/
+                            CASE when max_month.max_month = extract(month from max(trips.startutc)::date)
+                            THEN (date_trunc('month', MAX(trips.startutc)) + interval '1 month')::date - 1
+                            ELSE max(trips.startutc)::date END AS end_active_date
+                            from dockless_trips as trips
+                            LEFT JOIN(select distinct
+                            operatorclean,
+                            extract(month from max(startutc)::date) as max_month
+                            from dockless_trips
+                            where operatorclean in ('lime', 'spin', 'mobike')
+                            group by 1
+                            order by 1) as max_month
+                            on trips.operatorclean = max_month.operatorclean
+                            where trips.operatorclean in ('lime', 'spin', 'mobike')
+                            group by 1, 2, 3
+                            order by 1, 2, 3) as max_month_trips
+                        group by 1, 2
+                        order by 1, 2)
+                        union
+                        /*ofo users*/
+                        (select distinct
+                        'ofo' as operatorclean,
+                        userid,
+                        min(usage_month)::date as start_active_date,
+                        (date_trunc('month', MAX(usage_month)) + interval '1 month')::date - 1 AS end_active_date
+                        from ofo_users
+                        group by 1, 2
+                        order by 1, 2)
+                        union
+                        /*jump users*/
+                        (select distinct
+                        'jump' as operatorclean,
+                        userid,
+                        min(usage_month)::date as start_active_date,
+                        (date_trunc('month', MAX(usage_month)) + interval '1 month')::date - 1 AS end_active_date
+                        from jump_users
+                        group by 1, 2
+                        order by 1, 2)) as dless_users
+                        ON ds.weather_date BETWEEN dless_users.start_active_date AND dless_users.end_active_date
+                        where ds.weather_date>= '2017-09-09'
+                        GROUP BY 1, 2
+                        ORDER BY 1, 2
+                        $$
+                    ,$$SELECT unnest('{jump,lime,mobike,ofo,spin}'::text[])$$)
+                    AS ct ("date" date, "dless_users_jump" int, "dless_users_lime" int, "dless_users_mobike" int, "dless_users_ofo" int, "dless_users_spin" int)
+                    ;
+                     """, con=conn)
+    return df
+
+
+def dockless_bikes_available(conn):
+    # Bikes available by dockless operator
+    df = pd.read_sql("""SELECT * FROM crosstab($$
+                         /* Join dockless trip date to bikes available */
+                        SELECT DISTINCT
+                        trips.startutc::date as date,
+                        trips.operatorclean,
+                        /* OFO and MOBIKE always 400, the use API, the use DDOT summary*/
+                        CASE WHEN trips.operatorclean in ('ofo', 'mobike') THEN 400
+                        ELSE CASE WHEN api.bikes_available is null THEN summary.totalbikes
+                        ELSE api.bikes_available END END::int as dless_bikes_avail
+                        FROM dockless_trips AS trips
+                        /*Join on API data first */
+                        LEFT JOIN dockless_bikes_api as api
+                        ON trips.startutc::date = api.date AND trips.operatorclean = api.operator
+                        /*Join on DDOT summary next by year and month*/
+                        LEFT JOIN dockless_summary as summary
+                        ON EXTRACT('month' FROM trips.startutc) = EXTRACT('month' FROM summary.month)
+                        AND EXTRACT('year' FROM trips.startutc) = EXTRACT('year' FROM summary.month)
+                        AND trips.operatorclean = summary.operator
+                        ORDER BY 1, 2;
+                         $$
+                           ,$$SELECT unnest('{jump,lime,mobike,ofo,spin}'::text[])$$)
+                        AS ct ("date" date, "dless_bikes_jump" int, "dless_bikes_lime" int, "dless_bikes_mobike" int, "dless_bikes_ofo" int, "dless_bikes_spin" int)
+                        ;
+                        """, con=conn)
+    return df

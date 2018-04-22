@@ -78,8 +78,9 @@ if __name__ == "__main__":
     second_df.set_index('date', inplace=True)
     second_df.to_csv("second.csv", index=True, sep='|')
 
-    # DOCKLESS: Trips
     print('Start Dockless Processing')
+
+    # DOCKLESS: Trips
     dless_trips_df = dless.dockless_trips_by_operator(conn)
     dless_trips_df = date_to_datetime_type(dless_trips_df)
     dless_trips_df['dless_trips_all'] = dless_trips_df.sum(axis=1)
@@ -103,12 +104,22 @@ if __name__ == "__main__":
     dless_overlap_df.set_index(['date', 'operator'], inplace=True)
     dless_overlap_df_unstack = df_unstack(in_df=dless_overlap_df, level=[-1])
 
+    # DOCKLESS: Active Users
+    dless_users_df = dless.dockless_active_users(conn)
+    dless_users_df = date_to_datetime_type(dless_users_df)
+
+    # DOCKLESS: Bikes available
+    dless_bikes_df = dless.dockless_bikes_available(conn)
+    dless_bikes_df = date_to_datetime_type(dless_bikes_df)
+
     # DOCKLESS: Concat all Dockless Trip related dataframes
     dless_dfs = [dless_trips_df,
                  dless_trip_dist_tot_df,
                  dless_trip_dist_avg_df,
                  dless_overlap_df_unstack,
-                 dless_trip_dur_df_unstack]
+                 dless_trip_dur_df_unstack,
+                 dless_users_df,
+                 dless_bikes_df]
     dless_df = pd.concat(dless_dfs, axis=1)
 
     # DOCKLESS: Calculate avg trip distances for all dockless trips
@@ -170,6 +181,16 @@ if __name__ == "__main__":
     cabi_outhist_unstack['cabi_dur_empty_tot'] = cabi_sum(sum_type='empty', df=cabi_outhist_unstack)
     cabi_outhist_unstack['cabi_dur_full_tot'] = cabi_sum(sum_type='full', df=cabi_outhist_unstack)
 
+    # CABI: Member History
+    cabi_members_df = cabi.cabi_members(conn)
+    cabi_members_df['date'] = cabi_members_df['date'].astype('datetime64[ns]')
+    cabi_members_df.set_index('date', inplace=True)
+
+    # CABI: Day Passes
+    cabi_passes_df = cabi.cabi_passes(conn)
+    cabi_passes_df['date'] = cabi_passes_df['date'].astype('datetime64[ns]')
+    cabi_passes_df.set_index('date', inplace=True)
+
     # Merge all CaBI DFs together
     cabi_dfs = [by_tot_df,
                 by_mem_type_unstack,
@@ -177,7 +198,9 @@ if __name__ == "__main__":
                 by_region_member_df_unstack,
                 cabi_bikes_df,
                 cabi_stations_unstack,
-                cabi_outhist_unstack]
+                cabi_outhist_unstack,
+                cabi_members_df,
+                cabi_passes_df]
 
     cabi_df = pd.concat(cabi_dfs, axis=1)
     cabi_df.fillna(0, inplace=True)

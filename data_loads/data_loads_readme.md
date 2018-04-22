@@ -20,6 +20,10 @@ This folder will serve as a library of data loads to AWS.
 
 1. cabi_pricing_model - Capital Bikeshare overage pricing data for up to 24 hours of usage for both member and day pass users as of 3/25/2018.
 
+1. cabi_trips_membertype - CaBi trips data from 2015-July 2017 with enhanced member type added to trip.  Will not be integrated into final database
+
+1. cabi_membership - Monthly membership and trip counts
+
 1. dockless_pricing_model - Pricing data all dockless except for Jump bike for up to 24 hours of usage.
 
 1. jump_pricing_model - Pricing data for Jump Bikes, need to incorporate hub docking discount when using in Python scripts.
@@ -31,6 +35,10 @@ This folder will serve as a library of data loads to AWS.
 1. ofo_users - Ofo operator data, users trips by user id and month, as of April have data from October through Febrary
 
 1. jump_users - Jump operator data, users trips by user id and month, as of April have data from September through Febrary
+
+1. dockless_bikes_api - Jump operator data, users trips by user id and month, as of April have data from September through Febrary
+
+1. dockless_summary - Summary provided by DDOT with monthly bike available counts and trips taken
 
 
 ## Secondary Data (Weather, DC Population, Etc).

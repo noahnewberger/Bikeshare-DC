@@ -43,9 +43,12 @@ def dark_sky(conn):
 
 def nats_games(conn):
     # Count of National Games per day 2010-2018 (attendance data to be added later)
-    df = pd.read_sql("""SELECT game_datetime::date as date,
-                        count(*) as nats_games
-                        from nats_games
+    df = pd.read_sql("""SELECT
+                        date,
+                        count(*) as nats_games,
+                        sum(attendance) as nats_attendance
+                        from nats_attendance
+                        where Home_Away != '@'
                         group by 1
                         order by 1;
                         """, con=conn)

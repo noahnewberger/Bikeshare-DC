@@ -132,3 +132,63 @@ def cabi_outage_history(conn):
                         GROUP BY 1, 2, 3;
                         """, con=conn)
     return df
+
+
+def cabi_members(conn):
+    # Number of active annual, monthly and day key members, provided at monthly level
+    df = pd.read_sql("""
+                      SELECT
+                      ds.weather_date as date,
+                      day_key.day_key_active_users::int as cabi_active_members_day_key,
+                      monthly.monthly_member_purch::int as cabi_active_members_monthly,
+                      SUM(annual.annual_member_purch)::int as cabi_active_members_annual
+                      FROM dark_sky_raw as ds
+                      LEFT JOIN
+                      /*Join on Annual Members*/
+                      (select distinct
+                      month as start_month,
+                      date_trunc('month', month + interval '1 year')::date as end_month,
+                      annual_member_purch
+                      FROM cabi_membership
+                      ORDER BY month) as annual
+                      ON ds.weather_date BETWEEN annual.start_month AND annual.end_month
+                      /* JOIN on Monthly Members*/
+                      LEFT JOIN (select month, monthly_member_purch from cabi_membership) as monthly
+                      ON EXTRACT('month' FROM ds.weather_date) = EXTRACT('month' FROM monthly.month)
+                      AND EXTRACT('year' FROM ds.weather_date) = EXTRACT('year' FROM monthly.month)
+                      /* JOIN on Day Key Members as runnning total*/
+                      LEFT JOIN (select
+                           month,
+                           SUM(day_key_member_purch) OVER (ORDER BY month) AS day_key_active_users
+                           FROM cabi_membership
+                           GROUP BY 1
+                           ORDER BY 1) as day_key
+                      ON EXTRACT('month' FROM ds.weather_date) = EXTRACT('month' FROM day_key.month)
+                      AND EXTRACT('year' FROM ds.weather_date) = EXTRACT('year' FROM day_key.month)
+                      GROUP BY 1, 2, 3
+                      ORDER BY 1;
+                      """, con=conn)
+    return df
+
+
+def cabi_passes(conn):
+    # Number of single day, multi-day and single trip passes, provided at monthly level
+    df = pd.read_sql("""
+                    SELECT
+                    ds.weather_date as date,
+                    passes.multi_day_pass_purch::int as cabi_monthly_multi_day_pases,
+                    passes.single_day_pass_purch::int as cabi_monthly_single_day_pases,
+                    passes.single_trip_pass_purch::int as cabi_monthly_single_trip_pases
+                    FROM dark_sky_raw as ds
+                    LEFT JOIN
+                    (select
+                    month,
+                    multi_day_pass_purch,
+                    single_day_pass_purch,
+                    single_trip_pass_purch
+                    from cabi_membership) as passes
+                    ON EXTRACT('month' FROM ds.weather_date) = EXTRACT('month' FROM passes.month)
+                    AND EXTRACT('year' FROM ds.weather_date) = EXTRACT('year' FROM passes.month)
+                    ORDER BY 1;
+                      """, con=conn)
+    return df
