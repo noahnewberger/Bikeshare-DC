@@ -4,9 +4,21 @@ import util_functions as uf
 from datetime import datetime
 
 
-def convert_month_toDT(x):
-    # Convert text month to datetime
-    if x in [9, 10, 11, 12]:
+def min_jump_trip(cur):
+    # Query Jump dockless trips to get first date of operation
+    cur.execute("""SELECT
+                   min(startutc)::date AS start_date
+                   FROM dockless_trips AS main
+                   where  main.operatorclean='jump';
+                   """)
+    return cur.fetchone()[0]
+
+
+def convert_month_toDT(x, cur):
+    # Convert text month to datetime, just dockless trips to get min date
+    if x in [9]:
+        date = min_jump_trip(cur)
+    elif x in [10, 11, 12]:
         date = datetime(year=2017, month=x, day=1)
     else:
         date = datetime(year=2018, month=x, day=1)
@@ -40,7 +52,7 @@ if __name__ == "__main__":
     jump_df_stack = jump_df_stack.reset_index()
 
     # Define Month in Datetime
-    jump_df_stack['usage_month'] = jump_df_stack['level_1'].apply(convert_month_toDT)
+    jump_df_stack['usage_month'] = jump_df_stack['level_1'].apply(lambda x: convert_month_toDT(x, cur))
     jump_df_stack.drop(['level_1'], axis=1, inplace=True)
     jump_df_stack.columns = ['user_id', 'trips', 'usage_month']
     jump_df_stack.sort_values(['user_id', 'usage_month'], inplace=True)

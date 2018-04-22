@@ -5,8 +5,10 @@ from datetime import datetime
 
 
 def convert_month_toDT(x):
-    # Convert text month to datetime
-    if x in ['October', 'November', 'December']:
+    # Convert text month to datetime, Ofo started on 10/8/2017
+    if x in ['October']:
+        s = "08 {}, 2017".format(x)
+    elif x in ['November', 'December']:
         s = "01 {}, 2017".format(x)
     else:
         s = "01 {}, 2018".format(x)
