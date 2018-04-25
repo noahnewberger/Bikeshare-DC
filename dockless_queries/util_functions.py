@@ -15,8 +15,8 @@ def aws_connect():
     host = "bikeshare-restored.cs9te7lm3pt2.us-east-1.rds.amazonaws.com"
     port = 5432
     database = "bikeshare"
-    user = os.environ.get("AWS_USER")
-    password = os.environ.get("AWS_PASS")
+    user = os.environ.get("AWS_READONLY_USER")
+    password = os.environ.get("AWS_READONLY_PASS")
     conn = psycopg2.connect(host=host, user=user, port=port, password=password, database=database)
     cur = conn.cursor()
     return conn, cur
