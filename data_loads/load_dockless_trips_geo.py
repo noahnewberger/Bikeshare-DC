@@ -13,6 +13,10 @@ def create_dockless_trips_geo(cur):
     dless.bikeid,
     dless.startutc,
     dless.endutc,
+    anc_start.start_anc,
+    anc_end.end_anc,
+    ngh_start.start_nbh_names,
+    ngh_end.end_nbh_names,
     dless.startlatitude,
     dless.StartLongitude,
     dless.endlatitude,
@@ -57,6 +61,13 @@ def create_dockless_trips_geo(cur):
        LIMIT 1) as end_station
     LEFT JOIN (select * FROM cabi_out_hist WHERE start_time::date >='2017-9-01' and status = 'empty') as start_out_hist
     ON dless.startutc BETWEEN start_out_hist.start_time AND start_out_hist.end_time
+    /* JOIN ON ANC START*/
+    LEFT JOIN dockless_anc_start as anc_start
+    ON dless.tripid = anc_start.tripid and dless.operatorclean = anc_start.operatorclean
+    /* JOIN ON ANC END*/
+    LEFT JOIN dockless_anc_end as anc_end
+    ON dless.tripid = anc_end.tripid and dless.operatorclean = anc_end.operatorclean
+
     """)
 
 

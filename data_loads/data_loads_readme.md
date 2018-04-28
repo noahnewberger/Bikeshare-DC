@@ -30,7 +30,7 @@ This folder will serve as a library of data loads to AWS.
 
 1. dockless_trips - Dockles trip data through February 2018 (no Spin Jan data and no Mobike Feb data)
 
-1. dockless_trips_geo - Calculates trip distance, distance to closest start and end cabi station and keeps vital fields from dockless_trips.  Jump data not currently included due to rounding issues with lat and lon that will hopefully be resolved in the future.
+1. dockless_trips_geo - Calculates trip distance, distance to closest start and end cabi station and keeps vital fields from dockless_trips.  Jump data not currently included due to rounding issues with lat and lon that will hopefully be resolved in the future.  As of 4/29: Now includes start and end ANC and Neighborhood Cluster.
 
 1. ofo_users - Ofo operator data, users trips by user id and month, as of April have data from October through Febrary
 
