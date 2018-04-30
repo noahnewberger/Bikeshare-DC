@@ -6,17 +6,16 @@ def create_dockless_trips_geo(cur):
     cur.execute("""
     DROP TABLE IF EXISTS dockless_trips_geo;
     CREATE TABLE dockless_trips_geo as
-    SELECT
+    SELECT DISTINCT
     dless.tripid,
     dless.uniquetripid,
     dless.operatorclean,
     dless.bikeid,
+    dless.userid,
     dless.startutc,
     dless.endutc,
-    anc_start.start_anc,
-    anc_end.end_anc,
-    ngh_start.start_nbh_names,
-    ngh_end.end_nbh_names,
+    start_anc.start_anc,
+    end_anc.end_anc,
     dless.startlatitude,
     dless.StartLongitude,
     dless.endlatitude,
@@ -62,13 +61,25 @@ def create_dockless_trips_geo(cur):
     LEFT JOIN (select * FROM cabi_out_hist WHERE start_time::date >='2017-9-01' and status = 'empty') as start_out_hist
     ON dless.startutc BETWEEN start_out_hist.start_time AND start_out_hist.end_time
     /* JOIN ON ANC START*/
-    LEFT JOIN dockless_anc_start as anc_start
-    ON dless.tripid = anc_start.tripid and dless.operatorclean = anc_start.operatorclean
-    /* JOIN ON ANC END*/
-    LEFT JOIN dockless_anc_end as anc_end
-    ON dless.tripid = anc_end.tripid and dless.operatorclean = anc_end.operatorclean
-
-    """)
+    CROSS JOIN LATERAL
+    ((SELECT anc_id as start_anc
+     FROM anc
+     WHERE ST_Intersects(ST_SetSRID(st_makepoint(dless.startLongitude, dless.startLatitude),4326), anc.polygon) = 't'
+     )
+     UNION
+     (WITH  temp (start_anc) AS (VALUES (null))
+      SELECT * FROM temp)
+     LIMIT 1) as start_anc
+    /* JOIN ANC END */
+    CROSS JOIN LATERAL
+    ((SELECT anc_id as end_anc
+     FROM anc
+     WHERE ST_Intersects(ST_SetSRID(st_makepoint(dless.endLongitude, dless.endLatitude),4326), anc.polygon) = 't'
+     )
+     UNION
+     (WITH  temp (end_anc) AS (VALUES (null))
+      SELECT * FROM temp)
+     LIMIT 1) as end_anc    """)
 
 
 if __name__ == "__main__":
