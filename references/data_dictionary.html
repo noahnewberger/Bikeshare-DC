@@ -13,36 +13,36 @@
     <h4>Names to be Placed Here</h4>
   
     
-      <table class="min"><th>anc:</th><td>This is where the table description will go</table>
+      <table class="min"><th>anc:</th><td>DC Advisory Neighborhood Commissions converted from Open Data DC GeoJSON</table>
       <table class="wide">
         <tr><th>Attribute</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
         
-          <tr><td>anc_id</td><td>character varying</td><td>YES</td><td>None</td></tr>
+          <tr><td>anc_id</td><td>character varying</td><td>YES</td><td>ANC name with Ward Number and ANC Letter (ie "6B") </td></tr>
         
-          <tr><td>name</td><td>character varying</td><td>YES</td><td>None</td></tr>
+          <tr><td>name</td><td>character varying</td><td>YES</td><td>Same as anc_id with "ANC " concatenated prior (ie "ANC 6B")</td></tr>
         
-          <tr><td>objectid</td><td>integer</td><td>NO</td><td>None</td></tr>
+          <tr><td>objectid</td><td>integer</td><td>NO</td><td>ID 1 - n for each ANC, should not be used for anything</td></tr>
         
-          <tr><td>shape_area</td><td>numeric</td><td>YES</td><td>None</td></tr>
+          <tr><td>shape_area</td><td>numeric</td><td>YES</td><td>Area of the ANC in square meters</td></tr>
         
-          <tr><td>shape_length</td><td>numeric</td><td>YES</td><td>None</td></tr>
+          <tr><td>shape_length</td><td>numeric</td><td>YES</td><td>Length of the Perimeter of the ANC in meters </td></tr>
         
-          <tr><td>web_url</td><td>character varying</td><td>YES</td><td>None</td></tr>
+          <tr><td>web_url</td><td>character varying</td><td>YES</td><td>URL to the offficial website for each ANC</td></tr>
         
-          <tr><td>polygon</td><td>USER-DEFINED</td><td>YES</td><td>None</td></tr>
+          <tr><td>polygon</td><td>geography</td><td>YES</td><td>List of Longitude and Latitude points that form boundary of ANC</td></tr>
         
       </table>
       <br />
     
-      <table class="min"><th>bike_events:</th><td>None</table>
+      <table class="min"><th>bike_events:</th><td>Major Bike events in the DC area 2014-2018 pulled from WABA Google Calendar</table>
       <table class="wide">
         <tr><th>Attribute</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
         
-          <tr><td>id</td><td>character varying</td><td>NO</td><td>None</td></tr>
+          <tr><td>id</td><td>character varying</td><td>NO</td><td>Google Calendar Event ID</td></tr>
         
-          <tr><td>final_date</td><td>date</td><td>YES</td><td>None</td></tr>
+          <tr><td>final_date</td><td>date</td><td>YES</td><td>Date of the event</td></tr>
         
-          <tr><td>summary</td><td>character varying</td><td>YES</td><td>None</td></tr>
+          <tr><td>summary</td><td>character varying</td><td>YES</td><td>Summary of the event per the Google Calendar description</td></tr>
         
       </table>
       <br />
