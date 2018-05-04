@@ -71,6 +71,4 @@ tmpl_vars = {
     'title': args.title
 }
 
-print(tmpl_vars['dictionary'])
-
 report.generate_report(tmpl_vars, args)
