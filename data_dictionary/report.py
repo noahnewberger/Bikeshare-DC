@@ -34,3 +34,14 @@ def generate_report(tmpl_vars, args):
 
     with open(out_file, 'w') as f:
         f.write(md_out)
+
+def generate_csv(tmpl_vars, args):
+    name = 'csv'
+    tmpl = env.get_template(name + '.tmpl')
+
+    csv_out = tmpl.render(tmpl_vars)
+
+    out_file = name + ".csv" if args.output is None else args.output
+
+    with open(out_file, 'w') as f:
+        f.write(csv_out)

@@ -72,3 +72,4 @@ tmpl_vars = {
 }
 
 report.generate_report(tmpl_vars, args)
+report.generate_csv(tmpl_vars, args)

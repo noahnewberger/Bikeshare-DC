@@ -1,11 +1,37 @@
-# Data Dictionary
+# Georgetown Capstone Team Bikeshare Data Dictionary
 
-## Georgetown Capstone Team Bikeshare
 
-  
-  
 
-**acs**: None
+#### Table of Contents
+* [acs](#acs): None
+* [anc](#anc): DC Advisory Neighborhood Commissions converted from Open Data DC GeoJSON
+* [bike_events](#bike_events): None
+* [cabi_membership](#cabi_membership): None
+* [cabi_out_hist](#cabi_out_hist): None
+* [cabi_price](#cabi_price): None
+* [cabi_stations_geo_temp](#cabi_stations_geo_temp): None
+* [cabi_stations_temp](#cabi_stations_temp): None
+* [cabi_system](#cabi_system): None
+* [cabi_trips](#cabi_trips): None
+* [cabi_trips_membertype](#cabi_trips_membertype): None
+* [dan_dockless](#dan_dockless): None
+* [dark_sky_raw](#dark_sky_raw): None
+* [dc_pop](#dc_pop): None
+* [dockless_bikes_api](#dockless_bikes_api): None
+* [dockless_price](#dockless_price): None
+* [dockless_summary](#dockless_summary): None
+* [dockless_trips](#dockless_trips): None
+* [dockless_trips_geo](#dockless_trips_geo): None
+* [final_db](#final_db): None
+* [jump_price](#jump_price): None
+* [jump_users](#jump_users): None
+* [nats_attendance](#nats_attendance): None
+* [nats_games](#nats_games): None
+* [ngh](#ngh): None
+* [ofo_users](#ofo_users): None
+
+
+**acs**<a id="acs"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -53,7 +79,7 @@ trantime | integer | YES | None
 qtrantim | integer | YES | None
 qtranwor | integer | YES | None
 
-**anc**: DC Advisory Neighborhood Commissions converted from Open Data DC GeoJSON
+**anc**<a id="anc"></a>: DC Advisory Neighborhood Commissions converted from Open Data DC GeoJSON
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -65,7 +91,7 @@ shape_length | numeric | YES | None
 web_url | character varying | YES | None
 polygon | USER-DEFINED | YES | None
 
-**bike_events**: None
+**bike_events**<a id="bike_events"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -73,7 +99,7 @@ id | character varying | NO | None
 final_date | date | YES | None
 summary | character varying | YES | None
 
-**cabi_membership**: None
+**cabi_membership**<a id="cabi_membership"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -85,7 +111,7 @@ multi_day_pass_purch | numeric | YES | None
 single_day_pass_purch | numeric | YES | None
 single_trip_pass_purch | numeric | YES | None
 
-**cabi_out_hist**: None
+**cabi_out_hist**<a id="cabi_out_hist"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -96,7 +122,7 @@ end_time | timestamp without time zone | YES | None
 duration | integer | YES | None
 outage_id | integer | NO | None
 
-**cabi_price**: None
+**cabi_price**<a id="cabi_price"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -105,7 +131,7 @@ max_seconds | integer | YES | None
 casual_cost | numeric | YES | None
 member_cost | numeric | YES | None
 
-**cabi_stations_geo_temp**: None
+**cabi_stations_geo_temp**<a id="cabi_stations_geo_temp"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -141,7 +167,7 @@ end_anc | character varying | YES | None
 end_ward | character varying | YES | None
 dist_miles | numeric | YES | None
 
-**cabi_stations_temp**: None
+**cabi_stations_temp**<a id="cabi_stations_temp"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -157,7 +183,7 @@ rental_url | character varying | YES | None
 short_name | character varying | YES | None
 station_id | integer | NO | None
 
-**cabi_system**: None
+**cabi_system**<a id="cabi_system"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -165,7 +191,7 @@ region_id | integer | NO | None
 name | character varying | YES | None
 code | text | YES | None
 
-**cabi_trips**: None
+**cabi_trips**<a id="cabi_trips"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -178,7 +204,7 @@ bike_number | character varying | YES | None
 member_type | character varying | YES | None
 trip_id | bigint | NO | None
 
-**cabi_trips_membertype**: None
+**cabi_trips_membertype**<a id="cabi_trips_membertype"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -188,7 +214,7 @@ bikenumber | character varying | YES | None
 member_type | character varying | YES | None
 trip_id | character varying | NO | None
 
-**dan_dockless**: None
+**dan_dockless**<a id="dan_dockless"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -198,7 +224,7 @@ provider | character varying | YES | None
 bike_id | character varying | YES | None
 created | timestamp without time zone | YES | None
 
-**dark_sky_raw**: None
+**dark_sky_raw**<a id="dark_sky_raw"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -239,7 +265,7 @@ weather_date | date | NO | None
 windbearing | numeric | YES | None
 windspeed | numeric | YES | None
 
-**dc_pop**: None
+**dc_pop**<a id="dc_pop"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -248,7 +274,7 @@ citypop | numeric | YES | None
 grow_rate | numeric | YES | None
 pct_bike | numeric | YES | None
 
-**dockless_bikes_api**: None
+**dockless_bikes_api**<a id="dockless_bikes_api"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -256,7 +282,7 @@ date | date | YES | None
 operator | text | YES | None
 bikes_available | integer | YES | None
 
-**dockless_price**: None
+**dockless_price**<a id="dockless_price"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -267,7 +293,7 @@ spin | numeric | YES | None
 ofo | numeric | YES | None
 mobike | numeric | YES | None
 
-**dockless_summary**: None
+**dockless_summary**<a id="dockless_summary"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -276,7 +302,7 @@ month | date | YES | None
 totaltrips | numeric | YES | None
 totalbikes | numeric | YES | None
 
-**dockless_trips**: None
+**dockless_trips**<a id="dockless_trips"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -303,7 +329,7 @@ endutc | timestamp without time zone | YES | None
 uniquetripid | character varying | YES | None
 operatorclean | character varying | YES | None
 
-**dockless_trips_geo**: None
+**dockless_trips_geo**<a id="dockless_trips_geo"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -330,7 +356,7 @@ endcabi_distance_meters | double precision | YES | None
 end_station | character varying | YES | None
 end_geo_overlap | integer | YES | None
 
-**final_db**: None
+**final_db**<a id="final_db"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -1163,7 +1189,7 @@ dless_bikes_ofo | numeric | YES | None
 dless_bikes_spin | numeric | YES | None
 dless_tripdist_avg_all | numeric | YES | None
 
-**jump_price**: None
+**jump_price**<a id="jump_price"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -1171,7 +1197,7 @@ min_seconds | integer | NO | None
 max_seconds | integer | YES | None
 cost | numeric | YES | None
 
-**jump_users**: None
+**jump_users**<a id="jump_users"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -1179,7 +1205,7 @@ userid | character varying | YES | None
 trips | integer | YES | None
 usage_month | date | YES | None
 
-**nats_attendance**: None
+**nats_attendance**<a id="nats_attendance"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -1205,14 +1231,14 @@ attendance | integer | YES | None
 streak | character varying | YES | None
 orig_scheduled | character varying | YES | None
 
-**nats_games**: None
+**nats_games**<a id="nats_games"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
 game_datetime | timestamp without time zone | NO | None
 game_nbr | integer | YES | None
 
-**ngh**: None
+**ngh**<a id="ngh"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -1225,7 +1251,7 @@ type | text | YES | None
 web_url | character varying | YES | None
 polygon | USER-DEFINED | YES | None
 
-**ofo_users**: None
+**ofo_users**<a id="ofo_users"></a>: None
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---

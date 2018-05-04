@@ -1,6 +1,6 @@
 # Georgetown Capstone Team Bikeshare Data Dictionary
 
-  
+
 
 #### Table of Contents
 * [acs](#acs): None
