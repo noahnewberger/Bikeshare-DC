@@ -6,6 +6,7 @@ import secondary_queries as second
 from psycopg2 import sql
 import time
 from functools import reduce
+import holidays
 
 
 def cabi_agg_results(group_by_cols, drop_cols):
@@ -57,6 +58,12 @@ if __name__ == "__main__":
     dark_sky_df = second.dark_sky(conn)
     dark_sky_df = date_to_datetime_type(dark_sky_df)
 
+    # Federal Holidays Observed
+    us_holidays = holidays.UnitedStates()
+    us_holidays_df = dark_sky_df.index.to_frame()
+    us_holidays_df['us_holiday'] = us_holidays_df['date'].apply(lambda x: x in us_holidays).astype(int)
+    us_holidays_df.drop(['date'], axis=1, inplace=True)
+
     # Washington Nationals Home Game Data
     nats_df = second.nats_games(conn)
     nats_df = date_to_datetime_type(nats_df)
@@ -69,7 +76,7 @@ if __name__ == "__main__":
     bike_events_df = date_to_datetime_type(bike_events_df)
 
     # Merge all secondary Data together
-    second_dfs = [dark_sky_df, nats_df, bike_events_df]
+    second_dfs = [dark_sky_df, us_holidays_df, nats_df, bike_events_df]
     second_df = reduce(lambda left, right: pd.merge(left, right, how='left', left_index=True, right_index=True), second_dfs)
     second_df.drop_duplicates(inplace=True)
     second_df.reset_index(inplace=True)

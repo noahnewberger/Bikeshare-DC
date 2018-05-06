@@ -45,12 +45,14 @@ def nats_games(conn):
     # Count of National Games per day 2010-2018 (attendance data to be added later)
     df = pd.read_sql("""SELECT
                         date,
-                        count(*) as nats_games,
+                        case when count(*) = 1 then 1 else 0 end as nats_single,
+                        case when count(*) = 2 then 1 else 0 end as nats_double,
                         sum(attendance) as nats_attendance
                         from nats_attendance
                         where Home_Away != '@'
                         group by 1
-                        order by 1;
+                        order by 1
+                        ;
                         """, con=conn)
     return df
 
@@ -62,7 +64,7 @@ def dc_pop(conn):
                         EXTRACT(month from pop_date) as month,
                         citypop as dc_pop
                         FROM dc_pop
-                        WHERE pop_date::date >= '2010-10-01'
+                        WHERE pop_date::date >= '2010-09-01'
                         ORDER BY EXTRACT(year FROM pop_date), EXTRACT(month from pop_date)
                         """, con=conn)
     return df
