@@ -18,17 +18,29 @@ def trips_to_df(cabi_trip_dir):
     return combined_df
 
 
+def create_cabi_trips(cur):
+    # This script creates the CaBi System AWS table
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS cabi_trips(
+        duration integer,
+        start_date timestamp,
+        end_date timestamp,
+        start_station varchar(20),
+        end_station varchar(20),
+        bike_number varchar(30),
+        member_type varchar(20)
+    )
+            """)
+
+
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
     conn, cur = uf.aws_connect()
-
     # Loop through all CSVs in cabi trip data folder
     cabi_trip_dir = '../cabi_trip_data'
-
     # Convert trip data from CSV to dataframe
     combined_df = trips_to_df(cabi_trip_dir)
-
     # Add trip_id continuing from last record in AWS table
     trip_id_df = pd.read_sql("""SELECT trip_id from cabi_trips order by outage_id desc LIMIT 1 """, con=conn)
     last_trip_id = trip_id_df['trip_id'].iloc[0]
@@ -36,14 +48,12 @@ if __name__ == "__main__":
     combined_df['trip_id'] = combined_df.index + 1 + last_trip_id
     # Drop unneeded fields
     combined_df.drop(['index'], axis=1, inplace=True)
-
     # Output dataframe as CSV
-    # TODO: Define start and end months based on file names
-    outname = "CaBi_Trip_Data" + 'START_MONTH' + "_To_" + "END_MONTH"
+    outname = "CaBi_Trip_Data"
     combined_df.to_csv(outname + ".csv", index=False, sep='|')
-
+    # Create Table
+    create_cabi_trips(cur)
     # Load to Database
     uf.aws_load(outname, "cabi_trips", cur)
-
     # Commit changes to database
     conn.commit()

@@ -7,6 +7,7 @@ import itertools
 from geopy.distance import vincenty
 import os
 
+
 def extract_json(json_id):
     # Loop through each feature in GeoJson and pull our metadata and polygon
     url = "https://opendata.arcgis.com/datasets/{}.geojson".format(json_id)

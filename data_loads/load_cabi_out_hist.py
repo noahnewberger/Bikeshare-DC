@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     # Gather Outage data
     start_date = datetime.datetime(2011, 5, 11)
-    end_date = datetime.datetime(2018, 4, 2)
+    end_date = datetime.datetime(2018, 3, 31)
     date_list = date_list(start_date, end_date)
     df_list = gather_out_data(date_list)
 

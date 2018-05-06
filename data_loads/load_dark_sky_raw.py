@@ -108,7 +108,7 @@ if __name__ == "__main__":
     TIMESTR = time.strftime("%Y%m%d_%H%M%S")
     outname = "Dark_Sky_From_" + start_date.strftime('%Y-%m-%d') + "_To_" + end_date.strftime('%Y-%m-%d')
     results_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
-    # Create Database
+    # Create Table
     create_dark_sky_raw(cur)
     # Load to Database
     uf.aws_load(outname, "dark_sky_raw", cur)
