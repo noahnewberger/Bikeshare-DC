@@ -10,9 +10,9 @@ This folder will serve as a library of data loads to AWS.
 
 1. cabi_system - System informatiom from the CaBi API pulled on 3/24/2018.  Used primarily for appending region_code to station information 
 
-1. cabi_stations_temp - Capital Bikeshare station information pulled from CaBi API 3/25/2018.  Will ultimately be replaced by data from DDOT.
+1. cabi_stations_temp - Capital Bikeshare station information pulled from CaBi API 3/25/2018.
 
-1. cabi_stations_geo_temp - Capital Bikeshare station information pulled from CaBi API 3/25/2018 + geopolitical identifiers from open data DD
+1. cabi_stations_geo_temp - Capital Bikeshare station information pulled from CaBi API 3/25/2018 + geopolitical identifiers from open data DC
     # Neighborhood Cluster Name - "cluster_name", ex. "Cluster 6"
     # Neighborhod Cluster Description = "ngh_names", ex. "Dupont Circle, Connecticut Avenue/K Street"
     # Advisory Neighborhood Commissioner District - "anc", ex. "2B"

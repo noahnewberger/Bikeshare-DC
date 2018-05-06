@@ -5,17 +5,17 @@
 #### Table of Contents
 * [acs](#acs): None
 * [anc](#anc): DC Advisory Neighborhood Commissions converted from Open Data DC GeoJSON
-* [bike_events](#bike_events): None
-* [cabi_membership](#cabi_membership): None
-* [cabi_out_hist](#cabi_out_hist): None
-* [cabi_price](#cabi_price): None
-* [cabi_stations_geo_temp](#cabi_stations_geo_temp): None
-* [cabi_stations_temp](#cabi_stations_temp): None
+* [bike_events](#bike_events): Major Bike events in the DC area 2014-2018 pulled from WABA Google Calendar
+* [cabi_membership](#cabi_membership): Monthly Capital Bikeshare Membership and Pass Purchase History provided by DDOT
+* [cabi_out_hist](#cabi_out_hist): History of full and empty Capital Bikeshare station events from May 2011 - March 22, 2018.  Data pulled from [cabitracker.com](http://cabitracker.com/outage_history.php)
+* [cabi_price](#cabi_price): Capital Bikeshare overage pricing data for up to 24 hours of usage for both member and day pass users as of 3/25/2018.
+* [cabi_stations_geo_temp](#cabi_stations_geo_temp): Capital Bikeshare station information pulled from CaBi API 3/25/2018 + geopolitical identifiers from open data DC
+* [cabi_stations_temp](#cabi_stations_temp): Capital Bikeshare station information pulled from CaBi API 3/25/2018.
 * [cabi_system](#cabi_system): None
 * [cabi_trips](#cabi_trips): None
 * [cabi_trips_membertype](#cabi_trips_membertype): None
 * [dan_dockless](#dan_dockless): None
-* [dark_sky_raw](#dark_sky_raw): None
+* [dark_sky_raw](#dark_sky_raw): [Dark Sky API Documentation](https://darksky.net/dev/docs)
 * [dc_pop](#dc_pop): None
 * [dockless_bikes_api](#dockless_bikes_api): None
 * [dockless_price](#dockless_price): None
@@ -85,103 +85,103 @@ Attribute | Type | Nullable | Description
 --- | --- | --- | ---
 anc_id | character varying | YES | ANC name with Ward Number and ANC Letter (ie "6B")
 name | character varying | YES | Same as anc_id with "ANC " concatenated prior (ie "ANC 6B")
-objectid | integer | NO | None
-shape_area | numeric | YES | None
-shape_length | numeric | YES | None
-web_url | character varying | YES | None
-polygon | USER-DEFINED | YES | None
+objectid | integer | NO | ID 1 - n for each ANC, should not be used for anything
+shape_area | numeric | YES | Area of the ANC in square meters
+shape_length | numeric | YES | Length of the Perimeter of the ANC in meters
+web_url | character varying | YES | URL to the offficial website for each ANC
+polygon | USER-DEFINED | YES | List of Longitude and Latitude points that form boundary of ANC
 
-**bike_events**<a id="bike_events"></a>: None
-
-Attribute | Type | Nullable | Description
---- | --- | --- | ---
-id | character varying | NO | None
-final_date | date | YES | None
-summary | character varying | YES | None
-
-**cabi_membership**<a id="cabi_membership"></a>: None
+**bike_events**<a id="bike_events"></a>: Major Bike events in the DC area 2014-2018 pulled from WABA Google Calendar
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
-month | date | NO | None
-annual_member_purch | numeric | YES | None
-monthly_member_purch | numeric | YES | None
-day_key_member_purch | numeric | YES | None
-multi_day_pass_purch | numeric | YES | None
-single_day_pass_purch | numeric | YES | None
-single_trip_pass_purch | numeric | YES | None
+id | character varying | NO | Google Calendar Event ID
+final_date | date | YES | Date of the event
+summary | character varying | YES | Summary of the event per the Google Calendar description
 
-**cabi_out_hist**<a id="cabi_out_hist"></a>: None
+**cabi_membership**<a id="cabi_membership"></a>: Monthly Capital Bikeshare Membership and Pass Purchase History provided by DDOT
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
-terminal_number | character varying | YES | None
-status | character varying | YES | None
-start_time | timestamp without time zone | YES | None
-end_time | timestamp without time zone | YES | None
-duration | integer | YES | None
-outage_id | integer | NO | None
+month | date | NO | mm--yyyy (Sept 2010 - April 2018)
+annual_member_purch | numeric | YES | Number of CaBi Annual Memberships Purchased per month
+monthly_member_purch | numeric | YES | Number of CaBi Monthly Memberships Purchased per month
+day_key_member_purch | numeric | YES | Number of CaBi Day Key Memberships Purchased per month.  Day Key are unique in that a member pays only for the days that use the key.
+multi_day_pass_purch | numeric | YES | Number of CaBi 3 or 5 day passes Purchased per month
+single_day_pass_purch | numeric | YES | Number of CaBi 24 hour passes Purchased per month
+single_trip_pass_purch | numeric | YES | Number of CaBi Single Trips Purchased per month.  $2 Single Trips started in June 2016.
 
-**cabi_price**<a id="cabi_price"></a>: None
-
-Attribute | Type | Nullable | Description
---- | --- | --- | ---
-min_seconds | integer | NO | None
-max_seconds | integer | YES | None
-casual_cost | numeric | YES | None
-member_cost | numeric | YES | None
-
-**cabi_stations_geo_temp**<a id="cabi_stations_geo_temp"></a>: None
+**cabi_out_hist**<a id="cabi_out_hist"></a>: History of full and empty Capital Bikeshare station events from May 2011 - March 22, 2018.  Data pulled from [cabitracker.com](http://cabitracker.com/outage_history.php)
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
-start_short_name | character varying | YES | None
-end_short_name | character varying | YES | None
-start_capacity | integer | YES | None
-start_eightd_has_key_dispenser | boolean | YES | None
-start_lat | numeric | YES | None
-start_lon | numeric | YES | None
-start_name | character varying | YES | None
-start_region_id | integer | YES | None
-start_rental_methods | character varying | YES | None
-start_rental_url | character varying | YES | None
-start_station_id | integer | YES | None
-start_region_code | character varying | YES | None
-start_cluster_name | character varying | YES | None
-start_ngh_names | character varying | YES | None
-start_anc | character varying | YES | None
-start_ward | character varying | YES | None
-end_capacity | integer | YES | None
-end_eightd_has_key_dispenser | boolean | YES | None
-end_lat | numeric | YES | None
-end_lon | numeric | YES | None
-end_name | character varying | YES | None
-end_region_id | integer | YES | None
-end_rental_methods | character varying | YES | None
-end_rental_url | character varying | YES | None
-end_station_id | integer | YES | None
-end_region_code | character varying | YES | None
-end_cluster_name | character varying | YES | None
-end_ngh_names | character varying | YES | None
-end_anc | character varying | YES | None
-end_ward | character varying | YES | None
-dist_miles | numeric | YES | None
+terminal_number | character varying | YES | CaBi Station "Short Code"
+status | character varying | YES | Empty/Full
+start_time | timestamp without time zone | YES | Timestamp for start of status event
+end_time | timestamp without time zone | YES | Timestamp for end of status event
+duration | integer | YES | Duration of status in minutes (do not use)
+outage_id | integer | NO | Primary key for each status event
 
-**cabi_stations_temp**<a id="cabi_stations_temp"></a>: None
+**cabi_price**<a id="cabi_price"></a>: Capital Bikeshare overage pricing data for up to 24 hours of usage for both member and day pass users as of 3/25/2018.
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
-capacity | integer | YES | None
-eightd_has_key_dispenser | boolean | YES | None
-eightd_station_services | character varying | YES | None
-lat | numeric | YES | None
-lon | numeric | YES | None
-name | character varying | YES | None
-region_id | integer | YES | None
-rental_methods | character varying | YES | None
-rental_url | character varying | YES | None
-short_name | character varying | YES | None
-station_id | integer | NO | None
+min_seconds | integer | NO | Low end of time range for price in seconds up to 24 hours
+max_seconds | integer | YES | High end of time range of price in seconds up to 24 hours
+casual_cost | numeric | YES | Cost for Casual User
+member_cost | numeric | YES | Cost  for CaBi Member
+
+**cabi_stations_geo_temp**<a id="cabi_stations_geo_temp"></a>: Capital Bikeshare station information pulled from CaBi API 3/25/2018 + geopolitical identifiers from open data DC
+
+Attribute | Type | Nullable | Description
+--- | --- | --- | ---
+start_short_name | character varying | YES | 5 Digit unique station code - Start Station
+end_short_name | character varying | YES | 5 Digit unique station code - End Station
+start_capacity | integer | YES | Number of Docks - Start Station
+start_eightd_has_key_dispenser | boolean | YES | True/False if the station has a key dispenser - Start Station
+start_lat | numeric | YES | Latitude - Start Station
+start_lon | numeric | YES | Longitude - Start Station
+start_name | character varying | YES | Colloquial Name of Station (ie 17th and Mass Ave NW) - Start Station
+start_region_id | integer | YES | CABI jurisdictional region (ie 42=DC, 41= Arlington, VA) - Start Station
+start_rental_methods | character varying | YES | List of rental payment methods available - Start Station
+start_rental_url | character varying | YES | Station URL - Start Station
+start_station_id | integer | YES | Foreign key - Start Station
+start_region_code | character varying | YES | CABI jurisidictional region three digit code(ie WDC, ARL) - Start Station
+start_cluster_name | character varying | YES | DC Neighborhood Cluster ID (ie "Cluster 1") - Start Station
+start_ngh_names | character varying | YES | DC Neighborhood Cluster Name (ie ""Dupont Circle, Connecticut Avenue/K Street"") - Start Station
+start_anc | character varying | YES | DC Advisory Neighborhood Commission (ie "6B")  - Start Station
+start_ward | character varying | YES | DC Ward (ie "6")  - Start Station
+end_capacity | integer | YES | Number of Docks - End Station
+end_eightd_has_key_dispenser | boolean | YES | True/False if the station has a key dispenser - End Station
+end_lat | numeric | YES | Latitude - End Station
+end_lon | numeric | YES | Longitude - End Station
+end_name | character varying | YES | Colloquial Name of Station (ie 17th and Mass Ave NW) - End Station
+end_region_id | integer | YES | CABI jurisdictional region (ie 42=DC, 41= Arlington, VA) - End Station
+end_rental_methods | character varying | YES | List of rental payment methods available - End Station
+end_rental_url | character varying | YES | Station URL - End Station
+end_station_id | integer | YES | Foreign key - End Station
+end_region_code | character varying | YES | CABI jurisidictional region three digit code(ie WDC, ARL) - End Station
+end_cluster_name | character varying | YES | DC Neighborhood Cluster ID (ie "Cluster 1") - End Station
+end_ngh_names | character varying | YES | DC Neighborhood Cluster Name (ie ""Dupont Circle, Connecticut Avenue/K Street"") - End Station
+end_anc | character varying | YES | DC Advisory Neighborhood Commission (ie "6B")  - End Station
+end_ward | character varying | YES | DC Ward (ie "6")  - End Station
+dist_miles | numeric | YES | Distance between Start and End Station in Miles
+
+**cabi_stations_temp**<a id="cabi_stations_temp"></a>: Capital Bikeshare station information pulled from CaBi API 3/25/2018.
+
+Attribute | Type | Nullable | Description
+--- | --- | --- | ---
+capacity | integer | YES | Number of Docks
+eightd_has_key_dispenser | boolean | YES | True/False if the station has a key dispenser
+eightd_station_services | character varying | YES | List of services available at station (ie credit card, cash, etc)
+lat | numeric | YES | Latitude
+lon | numeric | YES | Longitude
+name | character varying | YES | Colloquial Name of Station (ie 17th and Mass Ave NW)
+region_id | integer | YES | CABi justidictional region (ie 42=DC, 41= Arlington, VA)
+rental_methods | character varying | YES | List of rental payment methods available
+rental_url | character varying | YES | API station URL 
+short_name | character varying | YES | 5 Digit unique station code
+station_id | integer | NO | Primary Key
 
 **cabi_system**<a id="cabi_system"></a>: None
 
@@ -224,7 +224,7 @@ provider | character varying | YES | None
 bike_id | character varying | YES | None
 created | timestamp without time zone | YES | None
 
-**dark_sky_raw**<a id="dark_sky_raw"></a>: None
+**dark_sky_raw**<a id="dark_sky_raw"></a>: [Dark Sky API Documentation](https://darksky.net/dev/docs)
 
 Attribute | Type | Nullable | Description
 --- | --- | --- | ---
@@ -393,7 +393,9 @@ sleet | numeric | YES | None
 visibility | numeric | YES | None
 windbearing | numeric | YES | None
 windspeed | numeric | YES | None
-nats_games | numeric | YES | None
+us_holiday | numeric | YES | None
+nats_single | numeric | YES | None
+nats_double | numeric | YES | None
 nats_attendance | numeric | YES | None
 dc_bike_event | numeric | YES | None
 dc_pop | numeric | YES | None
@@ -1157,14 +1159,17 @@ dless_tripdist_avg_lime | numeric | YES | None
 dless_tripdist_avg_mobike | numeric | YES | None
 dless_tripdist_avg_ofo | numeric | YES | None
 dless_tripdist_avg_spin | numeric | YES | None
+dless_geo_start_jump | numeric | YES | None
 dless_geo_start_lime | numeric | YES | None
 dless_geo_start_mobike | numeric | YES | None
 dless_geo_start_ofo | numeric | YES | None
 dless_geo_start_spin | numeric | YES | None
+dless_geo_end_jump | numeric | YES | None
 dless_geo_end_lime | numeric | YES | None
 dless_geo_end_mobike | numeric | YES | None
 dless_geo_end_ofo | numeric | YES | None
 dless_geo_end_spin | numeric | YES | None
+dless_cap_start_jump | numeric | YES | None
 dless_cap_start_lime | numeric | YES | None
 dless_cap_start_mobike | numeric | YES | None
 dless_cap_start_ofo | numeric | YES | None
