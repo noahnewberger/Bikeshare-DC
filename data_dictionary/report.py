@@ -30,7 +30,7 @@ def generate_report(tmpl_vars, args):
 
     md_out = tmpl.render(tmpl_vars)
 
-    out_file = name + ".md" if args.output is None else args.output
+    out_file = os.path.join("..", "references", name + ".md") if args.output is None else args.output
 
     with open(out_file, 'w') as f:
         f.write(md_out)
