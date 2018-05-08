@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     # Field Descriptions
     fields_df = load_excel(sheet_name='Fields')
-    field_comments = "comment on column " + fields_df['Table'] + "." + fields_df['Attribute'] + " is '" + fields_df['Description'] + "';"
+    field_comments = "comment on column " + fields_df['Table'] + "." + fields_df['Attribute'] + " is '" + fields_df['Description'].str.replace("'", "''") + "';"
     load_comments(comment_series=field_comments, cur=cur)
 
     # Commit changes to database

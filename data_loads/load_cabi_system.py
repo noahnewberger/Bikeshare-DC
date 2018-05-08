@@ -25,6 +25,18 @@ def region_code():
     return region_codes_df
 
 
+def create_cabi_system(cur):
+    # This script creates the CaBi System AWS table
+    cur.execute("""
+    DROP TABLE cabi_system;
+    CREATE TABLE cabi_system(
+        region_id serial PRIMARY KEY,
+        name varchar(100),
+        code text
+    )
+            """)
+
+
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
@@ -37,6 +49,8 @@ if __name__ == "__main__":
     # Output dataframe as CSV
     outname = "CaBi_System"
     regions_df.to_csv(outname + ".csv", index=False, sep='|')
+    # Create Table
+    create_cabi_system(cur)
     # Load to Database
     uf.aws_load(outname, "cabi_system", cur)
     # Commit changes to database

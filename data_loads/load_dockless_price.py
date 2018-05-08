@@ -1,7 +1,20 @@
 import pandas as pd
 import util_functions as uf
 
-# This script loads data to the dockless_price AWS table
+
+def create_dockless_price(cur):
+    # Loads data to the dockless_price AWS table
+    cur.execute("""
+    DROP TABLE dockless_price;
+    CREATE TABLE dockless_price(
+        min_seconds integer PRIMARY KEY,
+        max_seconds integer,
+        limebike numeric,
+        spin numeric,
+        ofo numeric,
+        mobike numeric
+        )
+            """)
 
 
 if __name__ == "__main__":
@@ -14,6 +27,8 @@ if __name__ == "__main__":
     # Output final dataframe
     outname = csv_name + "pipe_delimited"
     overage_df.to_csv(outname + ".csv", index=False, sep='|')
+    # Create Table
+    create_dockless_price(cur)
     # Load to Database
     uf.aws_load(outname, "dockless_price", cur)
     # Commit changes to database

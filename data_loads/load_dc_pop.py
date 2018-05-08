@@ -52,6 +52,18 @@ def dc_pop():
     return df_dc_pop
 
 
+def create_dc_pop(cur):
+    # This script creates the CaBi System AWS table
+    cur.execute("""
+    DROP TABLE dc_pop;
+    CREATE TABLE dc_pop (
+        pop_date timestamp PRIMARY KEY,
+        citypop numeric,
+        grow_rate numeric,
+        pct_bike numeric
+            """)
+
+
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
@@ -92,6 +104,8 @@ if __name__ == "__main__":
     # Output dataframe as CSV
     outname = "dc_pop"
     df_dc_month.to_csv(outname + ".csv", index=False, sep='|')
+    # Create Table
+    create_dc_pop(cur)
     # Load to Database
     uf.aws_load(outname, "dc_pop", cur)
     # Commit changes to database
