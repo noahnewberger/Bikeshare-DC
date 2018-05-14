@@ -88,6 +88,9 @@ if __name__ == '__main__':
     # Only looking at days with at least one dockless trip
     df = df[df['dless_trips_all'] != 0]
 
+    # Month Converter
+    df['month'] = month_prep('month')
+
     # Open google drive connection
     dr = open_drive()
 
