@@ -71,8 +71,8 @@ if __name__ == "__main__":
     conn, cur = uf.aws_connect()
 
     # Define Range of Date to pull forecast and turn into a list
-    start_date = datetime.datetime(2010, 9, 20)
-    end_date = datetime.datetime(2010, 9, 30)
+    start_date = datetime.datetime(2018, 4, 1)
+    end_date = datetime.datetime(2018, 4, 30)
     delta = end_date - start_date
     date_list = [start_date + datetime.timedelta(days=i) for i in range(delta.days + 1)]
     # Define API Key List

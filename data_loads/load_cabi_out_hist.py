@@ -3,6 +3,7 @@ import util_functions as uf
 import datetime
 import requests
 import io
+import os
 
 
 def pull_daily_data(date):
@@ -36,8 +37,7 @@ def gather_out_data(date_list):
 def create_cabi_out_hist(cur):
     # This script creates the Cabi Outage Hitory AWS table
     cur.execute("""
-    DROP TABLE cabi_out_hist;
-    CREATE TABLE cabi_out_hist(
+    CREATE TABLE IF NOT EXISTS cabi_out_hist(
         terminal_number varchar(20),
         status varchar(20),
         start_time timestamp,
@@ -54,8 +54,8 @@ if __name__ == "__main__":
     conn, cur = uf.aws_connect()
 
     # Gather Outage data
-    start_date = datetime.datetime(2011, 5, 11)
-    end_date = datetime.datetime(2018, 3, 31)
+    start_date = datetime.datetime(2018, 4, 1)
+    end_date = datetime.datetime(2018, 4, 30)
     date_list = date_list(start_date, end_date)
     df_list = gather_out_data(date_list)
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     combined_df.drop(['index', 'Station Name'], axis=1, inplace=True)
     # Output dataframe as CSV
     outname = "CaBi_Tracker_Outage_History_From_" + start_date.strftime('%Y-%m-%d') + "_To_" + end_date.strftime('%Y-%m-%d')
-    combined_df.to_csv(outname + ".csv", index=False, sep='|')
+    combined_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
     # Create Database
     create_cabi_out_hist(cur)
     # Load to Database

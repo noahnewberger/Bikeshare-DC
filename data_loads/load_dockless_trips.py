@@ -1,78 +1,82 @@
 import pandas as pd
 import util_functions as uf
-import numpy as np
 import os
+import numpy as np
 
 
 def create_dockless_trips(cur):
-    # This script creates the dockless trips AWS table
+    # This script creates the dockless trips received May, 18, 2018 AWS table
     cur.execute("""
     DROP TABLE IF EXISTS dockless_trips;
     CREATE TABLE dockless_trips(
-        X integer,
-        Operator varchar(50),
-        TripID varchar(50) PRIMARY KEY,
-        BikeID varchar(50),
-        UserID varchar(50),
-        StartDate timestamp,
-        EndDate timestamp,
-        StartLatitude numeric,
-        StartLongitude numeric,
+        duration_in_minute numeric,
         EndLatitude numeric,
         EndLongitude numeric,
-        TripDistance numeric,
-        MetersMoved numeric,
-        StartWard numeric,
+        end_time timestamp,
+        endutc timestamp,
         EndWard numeric,
         Distance numeric,
-        posct timestamp,
-        endposct timestamp,
+        MilesMoved numeric,
+        Operator varchar(50),
+        StartLatitude numeric,
+        StartLongitude numeric,
+        start_time timestamp,
         startutc timestamp,
-        endutc timestamp,
-        UniqueTripID varchar(50),
+        StartWard numeric,
+        TripID varchar(50) ,
+        TripDistance numeric,
+        UserID varchar(50),
+        BikeID varchar(50),
+        UniqueTripID varchar(50) PRIMARY KEY,
         OperatorClean varchar(50)
     )
     """)
+
+
+def patch_user_id():
+    # Userid is missing for ~15,000 limebike records in most recent file provided by DDOT. Patch with older file
+    patch_df = pd.read_sql("""select DISTINCT
+                              userid::text as user_id_patch,
+                              startutc,
+                              endutc,
+                              operatorclean,
+                              startlatitude::text as start_lat,
+                              startlongitude::text as start_lon,
+                              endlatitude::text as end_lat,
+                              endlongitude::text as end_lon
+                              FROM dockless_trips_org
+                              WHERE OperatorClean='lime';
+                           """, con=conn)
+    trips_df['startutc'] = pd.to_datetime(trips_df['start_time_est'])
+    trips_df['endutc'] = pd.to_datetime(trips_df['end_time_est'])
+    merge_columns = [col for col in patch_df.columns if col != 'user_id_patch']
+    merge_df = trips_df.merge(patch_df, on=merge_columns, how='left')
+    trips_df['user_id'] = np.where((merge_df['user_id_patch'].notnull()) & (merge_df['user_id'] == 0), merge_df['user_id_patch'], trips_df['user_id'])
+    # Drop extra calculated fields
+    return trips_df.drop(['startutc', 'endutc'], axis=1)
 
 
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
     conn, cur = uf.aws_connect()
-    # Read in Overage Data
-    csv_name = "feburaryaddedutc"
+    # Read in Dockless Trips Data
+    csv_name = "Updated_Cleaned_Data_May18"
     trips_df = pd.read_csv(os.path.join("data", csv_name + ".csv"), index_col=[0], dtype=str)
-    # List of all duplicate records by TripID
-    '''try:
-        dupes_by_trip = pd.concat(g for _, g in trips_df.groupby(["TripID"]) if len(g) > 1)
-        print("{} duplicate records by TripID".format(len(dupes_by_trip)))
-    except:
-        print("No duplicate records by TripID")
-    try:
-        dupes_by_operator_trip = pd.concat(g for _, g in trips_df.groupby(["Operator", "TripID"]) if len(g) > 1)
-        print("{} duplicate records by TripID".format(len(dupes_by_trip)))
-    except:
-        print("No duplicate records by Operator and TripID")'''
-    print(len(trips_df['TripID']))
-    print(len(trips_df['TripID'].drop_duplicates()))
-    # Drop duplicate records by Operator and TripID
-    trips_df = trips_df.drop_duplicates(["Operator", "TripID"])
-    print(len(trips_df['TripID']))
+    # Generate Tripid, since blank is data from DDOT
+    trips_df['trip_id'] = pd.Series(trips_df.index + 1).astype(str).apply(lambda x: x.zfill(5))
+    # Create a new trip_id that includes the first letter of the operator name
+    trips_df['UniqueTripID'] = trips_df['operator'].str.upper().str[0] + trips_df['trip_id']
     # Fill missing with 0
     trips_df.fillna(0, inplace=True)
-    # Create a new trip_id that includes the first letter of the operator name
-    trips_df['UniqueTripID'] = trips_df['Operator'].str[0] + trips_df['TripID']
-    # Drop records without an Operator
-    trips_df = trips_df[trips_df['Operator'] != 0]
     # Create clean version of operator
-    trips_df['OperatorClean'] = trips_df['Operator'].map(lambda x: x.split(" ")[0].lower().replace('limebike', 'lime'))
-    # Set enddate equal to startdate if missing
-    trips_df['EndDate'] = np.where(trips_df['EndDate'] == 0, trips_df['StartDate'], trips_df['EndDate'])
-    trips_df['endposct'] = np.where(trips_df['endposct'] == 0, trips_df['posct'], trips_df['endposct'])
-    trips_df['endutc'] = np.where(trips_df['endutc'] == 0, trips_df['startutc'], trips_df['endutc'])
+    trips_df['operatorclean'] = trips_df['operator'].map(lambda x: x.split(" ")[0].lower().replace('limebike', 'lime'))
+    # Patch limebike user_id with original dockless trips if missing
+    trips_df = patch_user_id()
     # Output final dataframe
     outname = csv_name + "pipe_delimited"
     trips_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
+    print(trips_df.columns)
     # Create Database
     create_dockless_trips(cur)
     # Load to Database

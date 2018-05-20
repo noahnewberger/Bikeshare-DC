@@ -31,10 +31,10 @@ if __name__ == "__main__":
     uf.set_env_path()
     conn, cur = uf.aws_connect()
 
-    spreadsheet_list = ["03a Subscription Purchases by Month All Time - Annual 2018-04-18T1400.xlsx",
-                        "03b Subscription Purchases by Month All Time - 30-Day 2018-04-18T1400.xlsx",
-                        "03c Subscription Purchases by Month All Time - Day Key 2018-04-18T1400.xlsx",
-                        "03d Subscription Purchases by Month All Time - Casuals 2018-04-18T1400.xlsx"]
+    spreadsheet_list = ["03a Subscription Purchases by Month All Time - Annual 2018-05-17T0922.xlsx",
+                        "03b Subscription Purchases by Month All Time - 30-Day 2018-05-17T0923.xlsx",
+                        "03c Subscription Purchases by Month All Time - Day Key 2018-05-17T0924.xlsx",
+                        "03d Subscription Purchases by Month All Time - Casuals 2018-05-17T0924.xlsx"]
     df_list = []
     for spreadsheet in spreadsheet_list:
         # Load Spreadsheet as Dataframe
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Combine Dataframe
     combined_df = pd.concat(df_list, axis=1)
     combined_df.reset_index(inplace=True)
-    combined_df['index'] = combined_df['index'].astype('datetime64[ns]')
+    combined_df['Local Purchase Month'] = combined_df['Local Purchase Month'].astype('datetime64[ns]')
     # Fill missing with zeros
     combined_df = combined_df.fillna(0)
     # Output dataframe as CSV
