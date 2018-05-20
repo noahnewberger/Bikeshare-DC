@@ -7,6 +7,25 @@ if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
     conn, cur = uf.aws_connect()
+
+    '''Single Trips as % of all CaBi passes (not memberships) purchased monthly
+        [[PLOT]]
+    '''
+    df = pd.read_sql("""select
+                        month,
+                        (single_trip_pass_purch/(multi_day_pass_purch + single_day_pass_purch + single_trip_pass_purch)) as single_pass_perc
+                        from cabi_membership
+                        where single_trip_pass_purch>0;
+                     """, con=conn)
+    print(df.tail(20))
+    import sys
+    sys.exit()
+    '''
+    Notes for Noah:
+        * The goal here is show that the vast majority of casual rides would be impacted by increase in dockless demand
+          as our ML will hopefully prove out.
+        * This is just a first cut, but wanted to give all the relevant variables and table names.
+    '''
     '''
     Percentage of Total Rides: Dockless vs. CaBi (Total and CaBI)
     [[PLOT]]
@@ -74,6 +93,7 @@ if __name__ == "__main__":
                         count(*) as user_trips
                         from dockless_trips
                         where operatorclean in ('mobike', 'lime', 'spin')
+                              AND userid != '0'
                         group by 1, 2
                         order by operatorclean, count(*))
                         union
