@@ -17,9 +17,7 @@ if __name__ == "__main__":
                         from cabi_membership
                         where single_trip_pass_purch>0;
                      """, con=conn)
-    print(df.tail(20))
-    import sys
-    sys.exit()
+    print(df.tail())
     '''
     Notes for Noah:
         * The goal here is show that the vast majority of casual rides would be impacted by increase in dockless demand
