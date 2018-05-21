@@ -386,8 +386,7 @@ temperaturelowtime | numeric | YES | The hour of the day when the overnight low 
 precipintensitymaxtime | numeric | YES | The hour when precipintensitymax occurs during a given day.
 sunrisetime | numeric | YES | The hour when the sun rises on a given day.
 sunsettime | numeric | YES | The hour when the sun sets on a given day.
-day_time | numeric | YES | 
-The UNIX time at which this data point begins
+day_time | numeric | YES | The UNIX time at which this data point begins
 daylight_hours | numeric | YES | Calculated field.  Sunsettime-sunrisetime as hours and with minutes as decimal
 apparenttemperaturehigh | numeric | YES | The daytime high feels-like temperature, degrees Fahrenheit.
 apparenttemperaturelow | numeric | YES | The overnight low feels-like temperature, degrees Fahrenheit.
