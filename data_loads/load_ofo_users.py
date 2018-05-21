@@ -49,16 +49,12 @@ if __name__ == "__main__":
     ofo_count_df = ofo_count_df.reset_index()
     ofo_count_df.columns = ['user_id', 'usage_month', 'trips']
     ofo_count_df.sort_values(['user_id', 'usage_month'], inplace=True)
-
     # Output dataframe as CSV
     outname = "ofo_users"
     ofo_count_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
-
     # Create Table in AWS
     create_ofo_users(cur)
-
     # Load to Database
     uf.aws_load(outname, "ofo_users", cur)
-
     # Commit changes to database
     conn.commit()
