@@ -231,12 +231,11 @@ if __name__ == "__main__":
                         where dless_trips_all > 0
                         """, con=conn)
     print(df.tail())
+
     '''
     Notes for Noah:
         * Jump purposefully removed here as it's highly unlikely we'll get better geocoordinate data for them
         * We only care about dockless starts because where a person ends a dockless trip has no bearing on CaBi station Capacity
-        * IMPORTANT: Hold off on workong on this for now.  There is an error in the way I calculated these fields
-          I need to re-work a bunch of stuff, but we should decide if it's worthwhile first
     '''
     '''
     % of total trips by Operator per ANC vs CaBi - TWO plots trip starts and trip ends
