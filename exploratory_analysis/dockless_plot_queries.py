@@ -155,8 +155,32 @@ if __name__ == "__main__":
     [[PLOT]]
     '''
 
-    # TBD: need to make timetable of Metro Peak Hours
-
+    df = pd.read_sql("""SELECT DISTINCT
+                        op_trips.*,
+                        dow_total_trips,
+                        op_trips.dockless_trips/dow_total_trips::float as op_perc
+                        FROM
+                        /* Get dockless trips by day of week and metro operating status*/
+                        (SELECT DISTINCT
+                        day_of_week,
+                        op_status,
+                        COUNT(trips.*) AS dockless_trips
+                        from dockless_trips AS trips
+                        LEFT JOIN metro_hours AS hours
+                        ON extract('DOW' FROM trips.startutc) = hours.day_of_week
+                        AND trips.startutc::time BETWEEN hours.start_time AND hours.end_time
+                        GROUP BY 1, 2
+                        ORDER BY 1, 2) as op_trips
+                        /* Get dockless trips by day of week to calculate % of DOW for each metro operating status*/
+                        LEFT JOIN
+                            (SELECT DISTINCT extract('DOW' FROM startutc) as dow,
+                                             count(*) as dow_total_trips
+                                             from dockless_trips
+                                             group by 1) as dow_trips
+                        ON dow_trips.dow = op_trips.day_of_week
+                        ORDER BY 1, 2;
+                        """, con=conn)
+    print(df.head())
     '''
     Daily Active Users (Dockless) vs CaBi Members
     [[PLOT]]
