@@ -31,20 +31,21 @@ if __name__ == "__main__":
     df = pd.read_sql("""select distinct
                         date,
                         /*Get Daily Percentage by taking daily totals and dividing by pilot totals*/
-                        (cabi_trips_wdc_to_wdc/cabi_trips_wdc_to_wdc_pilot) as cabi_total_perc,
-                        (cabi_trips_wdc_to_wdc_casual/cabi_trips_wdc_to_wdc_casual_pilot) as cabi_casual_perc,
-                        (dless_trips_all/dless_trips_all_pilot) as dless_total_perc
+                        (cabi_trips_wdc_to_wdc/cabi_trips_wdc_to_wdc_pilot)*100 as "Total CaBi DC to DC",
+                        (cabi_trips_wdc_to_wdc_casual/cabi_trips_wdc_to_wdc_casual_pilot)*100 as "Total CaBi DC to DC, Casual",
+                        (dless_trips_all/dless_trips_all_pilot)*100 as "Total Dockless Trips"
                         from final_db as db
                         left join
                         /*Aggregate Trips for the entire Pilot for CaBi and Dockless Totals*/
                         (select
                         sum(cabi_trips_wdc_to_wdc) as cabi_trips_wdc_to_wdc_pilot,
                         sum(cabi_trips_wdc_to_wdc_casual) as cabi_trips_wdc_to_wdc_casual_pilot,
+                        sum(cabi_trips_wdc_to_wdc_member) as cabi_trips_wdc_to_wdc_member_pilot,
                         sum(dless_trips_all) as dless_trips_all_pilot
                         from final_db
-                        where dless_trips_all > 0) as tot
+                        where dless_trips_all > 0 and date > '2017-09-10') as tot
                         on db.date = db.date
-                        where dless_trips_all > 0;
+                        where dless_trips_all > 0 and date > '2017-09-10';
                      """, con=conn)
     print(df.head())
     
@@ -73,7 +74,7 @@ if __name__ == "__main__":
     Notes for Noah:
         * This was originally monthly, but might be more interesting at the daily level.daily and will match plot above
         * X axis should be "date", either figure out how only show every n x-tick or hide x axis tick label and
-          describe x axis in overall label such as "Day in Dockless Pilot (9/9/2017 - 2/28/2018).
+          describe x axis in overall label such as "Day in Dockless Pilot (9/9/2017 - 4/30/2018).
     '''
 
     '''
@@ -292,7 +293,7 @@ if __name__ == "__main__":
                                 from
                                 (select * from
                                 cabi_trips
-                                where start_date::date >= '09-09-2017' and start_date::date <= '02-28-2018') as cabi_trips
+                                where start_date::date >= '09-10-2017' and start_date::date <= '04-30-2018') as cabi_trips
                                 /*keep only dc to dc cabi trips*/
                                 inner join
                                 (select distinct
@@ -313,7 +314,7 @@ if __name__ == "__main__":
                                 from
                                 (select * from
                                 cabi_trips
-                                where start_date::date >= '09-09-2017' and start_date::date <= '02-28-2018') as cabi_trips
+                                where start_date::date >= '09-10-2017' and start_date::date <= '04-30-2018') as cabi_trips
                                 /*keep only dc to dc cabi trips*/
                                 inner join
                                 (select distinct
