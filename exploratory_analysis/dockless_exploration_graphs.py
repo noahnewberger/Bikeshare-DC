@@ -5,9 +5,12 @@ from google_drive_push import *
 import seaborn as sns
 from seaborn import *
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.cbook as cbook
 from pprint import pprint
 import calendar
 import re
+import datetime
 
 distance = [
     'cabi_trip_dist_avg_wdc_to_wdc', 'dless_tripdist_avg_jump',
@@ -35,9 +38,30 @@ month_lst = {
 
 def month_prep(mon):
     # convert float month digit to integer to string month name
-    df[mon] = df[mon].astype(int)
-    df[mon] = df[mon].map(month_lst)
-    return df[mon]
+    mon = mon.astype(int)
+    mon = mon.map(month_lst)
+    return mon
+
+
+def day_locations(ax, date_col):
+    years = mdates.YearLocator()   # every year
+    months = mdates.MonthLocator()  # every month
+    yearsFmt = mdates.DateFormatter('%Y')
+    ax.xaxis.set_major_locator(years)
+    ax.xaxis.set_major_formatter(yearsFmt)
+    ax.xaxis.set_minor_locator(months)
+    datemin = datetime.date(date_col.min().year, 1, 1)
+    datemax = datetime.date(date_col.max().year + 1, 1, 1)
+    ax.set_xlim(datemin, datemax)
+    ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+    ax.format_ydata = price
+
+# format the coords message box
+
+
+def price(x):
+    return '$%1.2f' % x
+
 
 
 class Data_Graph:
@@ -71,11 +95,16 @@ class Data_Graph:
         self.axis = axis
         test = zip(self.columns, self.axis.flatten())
         for one, two in test:
+            if self.time == 'date':
+                day_locations(two, self.DATA[self.time])
             self.func(
                 x=self.DATA[self.time], y=self.DATA[one], data=self.DATA,
                 ax=two, showfliers=False, showmeans=True)
             if self.time == 'month':
                 two.set_xticklabels(two.get_xticklabels(), rotation=45)
+            if self.time != 'date':
+                day_locations(two, self.DATA[self.time])
+
 
 
 if __name__ == '__main__':
@@ -89,7 +118,8 @@ if __name__ == '__main__':
     df = df[df['dless_trips_all'] != 0]
 
     # Month Converter
-    df['month'] = month_prep('month')
+    df['month'] = month_prep(df['month'])
+    df['date'] = pd.to_datetime(df['date'])
 
     # Open google drive connection
     dr = open_drive()
@@ -101,15 +131,16 @@ if __name__ == '__main__':
     first.grapher(axes, sns.boxplot)
     all_in_one_save(
         "Trip Duration", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
-        '1db5i9U0QDnHO39lkNkDlYteG_Q5juY3q')
+        '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
 
     # Average Monthly Trips
     f, axes = plt.subplots(2, 2, sharex='col', sharey='row', figsize=(20, 10))
-    first.settings(trips_agg, 'month')
+    first.settings(trips_agg, 'date')
     first.grapher(axes, sns.pointplot)
+    f.autofmt_xdate()
     all_in_one_save(
         "Avg Monthly Trips", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
-        '1db5i9U0QDnHO39lkNkDlYteG_Q5juY3q')
+        '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
 
     # Utilization by Vendor
     f, axes = plt.subplots(2, 3, sharex='col', sharey='row', figsize=(20, 10))
@@ -120,7 +151,7 @@ if __name__ == '__main__':
     first.grapher(axes, sns.boxplot)
     all_in_one_save(
         "Utilization Vendor", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
-        '1db5i9U0QDnHO39lkNkDlYteG_Q5juY3q')
+        '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
 
     # Active User by Vendor
     f, axes = plt.subplots(4, 2, sharex='col', sharey='row', figsize=(20, 10))
@@ -128,4 +159,4 @@ if __name__ == '__main__':
     first.grapher(axes, sns.pointplot)
     all_in_one_save(
         "Active User Vendor", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
-        '1db5i9U0QDnHO39lkNkDlYteG_Q5juY3q')
+        '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
