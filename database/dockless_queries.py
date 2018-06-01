@@ -18,7 +18,7 @@ def dockless_trips_by_operator(conn):
 
 
 def dockless_trip_distance_total(conn):
-    # Calculate Cabi Bike Available based on bike min and max usage date, will ultimately be replaced by true CaBi Bike History
+    # Calculate total dockless trip distance
     df = pd.read_sql("""SELECT * FROM crosstab($$
                         SELECT DISTINCT
                         main.startutc::date AS date,
@@ -35,7 +35,7 @@ def dockless_trip_distance_total(conn):
 
 
 def dockless_trip_distance_avg(conn):
-    # Calculate Cabi Bike Available based on bike min and max usage date, will ultimately be replaced by true CaBi Bike History
+    # Calculate average dockless trip distance
     df = pd.read_sql("""SELECT * FROM crosstab($$
                         SELECT DISTINCT
                         main.startutc::date AS date,

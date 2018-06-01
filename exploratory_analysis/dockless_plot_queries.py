@@ -361,5 +361,52 @@ if __name__ == "__main__":
         * This query takes about a minute to run, be patient
 
     '''
+
+    ''' Daily Utilization using only API data for Jump, Spin and Lime vs CaBi System Wide
+        [[PLOT]]
+    '''
+    df = pd.read_sql("""SELECT
+                        api.*,
+                        cabi_bikes_avail,
+                        cabi_trips,
+                        dless_trips_jump,
+                        dless_trips_lime,
+                        dless_trips_spin,
+                        (dless_trips_jump / dless_bikes_jump) as jump_util_rate,
+                        (dless_trips_lime / dless_bikes_lime) as lime_util_rate,
+                        (dless_trips_spin / dless_bikes_spin) as spin_util_rate,
+                        cabi_util_rate
+                        FROM
+                        (SELECT * FROM crosstab($$
+                         /* Join dockless trip date to bikes available */
+                        SELECT DISTINCT
+                        date,
+                        operator,
+                        bikes_available
+                        FROM dockless_bikes_api
+                        ORDER BY 1, 2;
+                         $$
+                           ,$$SELECT unnest('{jump,lime,spin}'::text[])$$)
+                        AS ct ("date" date, "dless_bikes_jump" int, "dless_bikes_lime" int, "dless_bikes_spin" int)) as api
+                        LEFT JOIN
+                        (select
+                        date,
+                        cabi_trips,
+                        cabi_bikes_avail,
+                        cabi_util_rate,
+                        dless_trips_jump,
+                        dless_trips_lime,
+                        dless_trips_spin
+                        from final_db) as db
+                        on api.date = db.date
+                     """, con=conn)
+    df.to_csv('util_rate.csv')
+    '''
+    Notes for Noah:
+        * The goal here is show that dockless bike utilization has been much lower than CaBi due to such few bikes being available
+        * Also should be interesting to see how the scooters have impacted Lime utilization in March and April (scooters introed on March 12th)
+        * This table will only be for the time period we have API data, so mid February to April
+        * Just emailed Daniel and should get refreshed API data by this weekend (written 6/1/2018)
+    '''
     import sys
     sys.exit()
