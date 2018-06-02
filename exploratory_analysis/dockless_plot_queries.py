@@ -151,10 +151,10 @@ if __name__ == "__main__":
     '''
 
     '''
-    Distribution of Dockless Trips by Hour
+    Distribution of Trips by Hour
     [[PLOT]]
     '''
-
+    # Dockless
     df = pd.read_sql("""SELECT DISTINCT
                         op_trips.*,
                         dow_total_trips,
@@ -179,6 +179,75 @@ if __name__ == "__main__":
                                              group by 1) as dow_trips
                         ON dow_trips.dow = op_trips.day_of_week
                         ORDER BY 1, 2;
+                        """, con=conn)
+    print(df.head())
+    # CaBi
+    df = pd.read_sql("""SELECT DISTINCT
+                        op_trips.*,
+                        dow_total_trips,
+                        op_trips.cabi_trips/dow_total_trips::float as op_perc
+                        FROM
+                        /* Get dockless trips by day of week and metro operating status*/
+                        (SELECT DISTINCT
+                        day_of_week,
+                        op_status,
+                        member_type,
+                        COUNT(trips.*) AS cabi_trips
+                        from cabi_trips AS trips
+                        /* Join on metro hours*/
+                        LEFT JOIN metro_hours AS hours
+                        ON extract('DOW' FROM trips.start_date) = hours.day_of_week
+                        /* Join region to start station*/
+                        JOIN
+                        (SELECT distinct short_name, lat, lon, cabi_system.code AS region_code
+                        FROM cabi_stations_temp
+                        LEFT JOIN cabi_system
+                        ON cabi_stations_temp.region_id = cabi_system.region_id) as start_st
+                        ON trips.start_station = start_st.short_name
+                        /* Join region to end station*/
+                        JOIN
+                       (SELECT distinct short_name, lat, lon, cabi_system.code AS region_code
+                        FROM cabi_stations_temp
+                        LEFT JOIN cabi_system
+                        ON cabi_stations_temp.region_id = cabi_system.region_id) as end_st
+                        ON trips.end_station = end_st.short_name
+                                AND trips.start_date::time BETWEEN hours.start_time AND hours.end_time
+                                WHERE member_type != 'Unknown'
+                                AND start_date >= '09-10-2017'
+                                AND start_st.region_code = 'WDC'
+                                AND end_st.region_code = 'WDC'
+                                GROUP BY 1, 2, 3
+                                ORDER BY 1, 2, 3
+                                ) as op_trips
+                        /* Get cabi trips by day of week and member type to calculate % of DOW for each metro operating status*/
+                        LEFT JOIN
+                            (SELECT DISTINCT extract('DOW' FROM start_date) as dow,
+                         member_type,
+                                             count(*) as dow_total_trips
+                                             from cabi_trips as trips
+                        /* Join region to start station*/
+                         JOIN
+                         (SELECT distinct short_name, lat, lon, cabi_system.code AS region_code
+                          FROM cabi_stations_temp
+                          LEFT JOIN cabi_system
+                          ON cabi_stations_temp.region_id = cabi_system.region_id) as start_st
+                          ON trips.start_station = start_st.short_name
+                        /* Join region to end station*/
+                         JOIN
+                         (SELECT distinct short_name, lat, lon, cabi_system.code AS region_code
+                          FROM cabi_stations_temp
+                          LEFT JOIN cabi_system
+                          ON cabi_stations_temp.region_id = cabi_system.region_id) as end_st
+                          ON trips.end_station = end_st.short_name
+                                             where start_date >= '09-10-2017'
+                                             AND member_type != 'Unknown'
+                                             AND start_st.region_code = 'WDC'
+                                             AND end_st.region_code = 'WDC'
+                                             group by 1,2
+                                             ) as dow_trips
+                        ON dow_trips.dow = op_trips.day_of_week
+                        AND dow_trips.member_type= op_trips.member_type
+                        ORDER BY 1, 2
                         """, con=conn)
     print(df.head())
     '''
