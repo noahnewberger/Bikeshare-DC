@@ -26,7 +26,7 @@ trips_gran = [
     'dless_trips_mobike', 'dless_trips_ofo', 'dless_trips_spin']
 
 user_all = [
-    'cabi_active_members_monthly', 'cabi_monthly_multi_day_pases',
+    'cabi_active_members_total', 'dless_users_total',
     'dless_users_jump', 'dless_users_lime', 'dless_users_mobike',
     'dless_users_ofo', 'dless_users_spin']
 
@@ -102,8 +102,9 @@ class Data_Graph:
                 ax=two, showfliers=False, showmeans=True)
             if self.time == 'month':
                 two.set_xticklabels(two.get_xticklabels(), rotation=45)
-            if self.time != 'date':
-                day_locations(two, self.DATA[self.time])
+            #if self.time != 'date':
+            #    pass
+            #    day_locations(two, self.DATA[self.time])
 
 
 
@@ -133,13 +134,12 @@ if __name__ == '__main__':
         "Trip Duration", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
         '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
 
-    # Average Monthly Trips
     f, axes = plt.subplots(2, 2, sharex='col', sharey='row', figsize=(20, 10))
     first.settings(trips_agg, 'date')
     first.grapher(axes, sns.pointplot)
     f.autofmt_xdate()
     all_in_one_save(
-        "Avg Monthly Trips", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
+        "Daily Trips", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
         '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
 
     # Utilization by Vendor
@@ -155,8 +155,44 @@ if __name__ == '__main__':
 
     # Active User by Vendor
     f, axes = plt.subplots(4, 2, sharex='col', sharey='row', figsize=(20, 10))
+    df['dless_users_total'] = df[[
+        'dless_users_jump', 'dless_users_lime', 'dless_users_mobike',
+        'dless_users_ofo', 'dless_users_spin']].sum(axis=1)
+    df['cabi_active_members_total'] = df[[
+        'cabi_active_members_day_key', 'cabi_active_members_monthly',
+        'cabi_active_members_annual']].sum(axis=1)
     first.settings(user_all, 'month')
     first.grapher(axes, sns.pointplot)
     all_in_one_save(
-        "Active User Vendor", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
+        "Active User Vendor April", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
+        '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
+
+    # Pct Cabi versus Dockless
+    pct_df = df.groupby(['month'])['dless_trips_all','cabi_trips_wdc_to_wdc_casual','cabi_trips_wdc_to_wdc'].sum().reset_index()
+    pct_df['dless_tot'] = pct_df['dless_trips_all']/(pct_df['dless_trips_all'] + pct_df['cabi_trips_wdc_to_wdc'])
+    pct_df['cabi_tot'] = pct_df['cabi_trips_wdc_to_wdc']/(pct_df['dless_trips_all'] + pct_df['cabi_trips_wdc_to_wdc'])
+    pct_df['dless_casual'] = pct_df['dless_trips_all']/(pct_df['dless_trips_all'] + pct_df['cabi_trips_wdc_to_wdc_casual'])
+    pct_df['cabi_casual'] = pct_df['cabi_trips_wdc_to_wdc_casual']/(pct_df['dless_trips_all'] + pct_df['cabi_trips_wdc_to_wdc_casual'])
+    f, axes = plt.subplots(1, 2, sharex='col', sharey='row',  figsize=(20, 10))
+    width = 0.35
+    pct_df['month'] = pd.Categorical(
+        pct_df['month'], ['September', 'October', 'November', 'December', 'January', 'Feburary', 'March', 'April'])
+    pct_df.sort_values('month', inplace=True)
+    pct_df = pct_df.reset_index()
+    pct_df['index'] = pct_df.index.values
+    axes[0].bar(pct_df['index'], pct_df['cabi_tot'], width)
+    axes[0].bar(pct_df['index'], pct_df['dless_tot'], width, bottom=pct_df['cabi_tot'])
+    axes[0].set_xticklabels(('September', 'October', 'November', 'December', 'January', 'Feburary', 'March', 'April'))
+    axes[0].set_xticklabels(('','September', 'October', 'November', 'December', 'January', 'Feburary', 'March', 'April'))
+    plt.title("Total Cabi Rides vs Dockless", fontsize=12)
+    axes[1].bar(pct_df['index'], pct_df['cabi_casual'], width)
+    axes[1].bar(pct_df['index'], pct_df['dless_casual'], width, bottom=pct_df['cabi_casual'])
+    axes[1].set_xticklabels(('','September', 'October', 'November', 'December', 'January', 'Feburary', 'March', 'April'))
+    plt.title("Cabi Casual Rides vs Dockless", fontsize=12)
+    plt.suptitle(
+        "Market Share of Dockless (Orange) over Cabi (Blue) for the Dockless Pilot Period (September 10, 2017 - April 30, 2018)",
+        fontsize=12, fontweight=0)
+
+    all_in_one_save(
+        "Market Share", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
         '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
