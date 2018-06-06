@@ -38,19 +38,17 @@ if __name__ == "__main__":
     for df in [total_df, casual_df]:
         # Plot Style
         plt.style.use('seaborn-darkgrid')
-        my_dpi = 96
-        plt.figure(figsize=(960 / my_dpi, 960 / my_dpi), dpi=my_dpi)
-
+        plt.figure(figsize=(20, 10))
         # multiple line plot
         for column in df[[col for col in df if col != "Total Dockless Trips"]].drop('date', axis=1):
-            plt.plot(df['date'], df[column], marker='', color='grey', linewidth=1, alpha=0.4)
+            plt.plot(df['date'], df[column], marker='', linewidth=1, alpha=0.4)
 
         # Now re do the interesting curve, but biger with distinct color
-        plt.plot(df['date'], df['Total Dockless Trips'], marker='', color='orange', linewidth=1.5, alpha=0.4)
+        plt.plot(df['date'], df['Total Dockless Trips'], marker='', linewidth=2, alpha=0.4)
 
         # Add titles
-        plt.title("Daily Percentage of Total Trips over the Dockless Pilot Period (September 10, 2017 - April 30, 2018) \
-                  \n{} (Orange) vs {}".format(df.columns[-1], df.columns[1]), loc='left', fontsize=12, fontweight=0)
+        '''plt.title("Daily Percentage of Total Trips over the Dockless Pilot Period (September 10, 2017 - April 30, 2018) \
+                  \n{} (Orange) vs {}".format(df.columns[-1], df.columns[1]), loc='left', fontsize=12, fontweight=0)'''
         plt.xlabel("Dockless Pilot Period (September 10, 2017 - April 30, 2018)")
         plt.ylabel("Daily Percentage of Total Trips")
         plt.legend()

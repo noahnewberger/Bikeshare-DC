@@ -18,7 +18,7 @@ if __name__ == "__main__":
                         userid,
                         count(*) as user_trips
                         from dockless_trips
-                        where operatorclean in ('mobike', 'lime', 'spin')
+                        where operatorclean in ('lime', 'spin')
                         group by 1, 2
                         order by operatorclean, count(*))
                         union

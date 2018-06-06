@@ -21,7 +21,7 @@ if __name__ == "__main__":
                             from """ + model + """;
                          """, con=conn)
         # Scatter Plot with Reg Line
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(20, 10))
         df['plot_date'] = mdates.date2num(df['date'])
         sns.regplot(x='plot_date', y='dless_impact', data=df, ax=ax, scatter_kws={'alpha': 0.3})
         # Assign locator and formatter for the xaxis ticks.
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         # plt.ylim(-1.5, 2)
         plt.xlim(min(df['plot_date']) - 10, max(df['plot_date']) + 10)
         # Add titles
-        plt.title("{}".format(model.replace("rf", "Random Forest").replace("_", " CaBi ")).title())
+        #plt.title("{}".format(model.replace("rf", "Random Forest").replace("_", " CaBi ")).title())
         ax.set(xlabel='Dockless Pilot', ylabel='Impact = (Predicted-Actual) / Dockless Trips')
         fig.autofmt_xdate()
         plt.savefig("{}_impact.png".format(model))
