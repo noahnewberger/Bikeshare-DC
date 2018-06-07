@@ -23,3 +23,5 @@ database/Archive/db_built_test\.py
 *.zip
 
 *.txt
+
+*.html
