@@ -453,6 +453,7 @@ if __name__ == "__main__":
                         operator,
                         bikes_available
                         FROM dockless_bikes_api
+                        WHERE date <= '04-30-2018'
                         ORDER BY 1, 2;
                          $$
                            ,$$SELECT unnest('{jump,lime,spin}'::text[])$$)
