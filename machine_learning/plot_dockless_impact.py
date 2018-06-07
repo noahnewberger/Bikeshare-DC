@@ -31,7 +31,6 @@ if __name__ == "__main__":
         # plt.ylim(-1.5, 2)
         plt.xlim(min(df['plot_date']) - 10, max(df['plot_date']) + 10)
         # Add titles
-        #plt.title("{}".format(model.replace("rf", "Random Forest").replace("_", " CaBi ")).title())
         ax.set(xlabel='Dockless Pilot', ylabel='Impact = (Predicted-Actual) / Dockless Trips')
         fig.autofmt_xdate()
         plt.savefig("{}_impact.png".format(model))

@@ -21,7 +21,7 @@ if __name__ == "__main__":
     conn, cur = uf.aws_connect()
 
     # Load raw CSV as Dataframe
-    raw_df = pd.read_csv(os.path.join("data", "SELECT_DISTINCT_created_timestamp_at_time_zone_UTC_at_time_zone__201804041753.csv"))
+    raw_df = pd.read_csv(os.path.join("data", "bikes_per_day.csv"))
 
     # Lowercase provider and replace limebike with lime
     raw_df['provider'] = raw_df['provider'].str.lower().str.replace('limebike', 'lime')
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # Replace data outliers with reasonable number for Jump
     jump_outlier_mask = (raw_df['ride_date'].isin(['2018-02-22', '2018-02-23'])) & (raw_df['provider'] == 'jump')
     raw_df.loc[jump_outlier_mask, 'daily_bikes_available'] = 71
-    print(raw_df.head(20))
+    print(raw_df.tail(20))
 
     # Output dataframe as CSV
     outname = "dockless_bikes_api"
