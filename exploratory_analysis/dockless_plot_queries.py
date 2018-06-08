@@ -169,6 +169,7 @@ if __name__ == "__main__":
                         LEFT JOIN metro_hours AS hours
                         ON extract('DOW' FROM trips.startutc) = hours.day_of_week
                         AND trips.startutc::time BETWEEN hours.start_time AND hours.end_time
+                        where operatorclean != 'mobike'
                         GROUP BY 1, 2
                         ORDER BY 1, 2) as op_trips
                         /* Get dockless trips by day of week to calculate % of DOW for each metro operating status*/
@@ -176,6 +177,7 @@ if __name__ == "__main__":
                             (SELECT DISTINCT extract('DOW' FROM startutc) as dow,
                                              count(*) as dow_total_trips
                                              from dockless_trips
+                                             where operatorclean != 'mobike'
                                              group by 1) as dow_trips
                         ON dow_trips.dow = op_trips.day_of_week
                         ORDER BY 1, 2;
