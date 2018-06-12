@@ -293,11 +293,13 @@ if __name__ == "__main__":
     df = pd.read_sql("""select distinct
                         date,
                         /* % of trips that Start within quarter mile of CaBi Station*/
+                        dless_geo_start_jump,
                         dless_geo_start_lime,
                         dless_geo_start_mobike,
                         dless_geo_start_ofo,
                         dless_geo_start_spin,
                         /* % of trips that End within quarter mile of CaBi Station*/
+                        dless_geo_end_jump,
                         dless_geo_end_lime,
                         dless_geo_end_mobike,
                         dless_geo_end_ofo,
@@ -309,7 +311,7 @@ if __name__ == "__main__":
 
     '''
     Notes for Noah:
-        * Jump purposefully removed here as it's highly unlikely we'll get better geocoordinate data for them
+        * Updated Script 6/12/2018 to add back in Jump based on anticipation of new data arriving
     '''
 
     '''
@@ -319,10 +321,11 @@ if __name__ == "__main__":
     df = pd.read_sql("""select distinct
                         date,
                         /* % of trips that Start within quarter mile of CaBi Station when said Station is Empty*/
+                        dless_cap_start_jump::float,
                         dless_cap_start_lime::float,
-                        dless_cap_start_mobike,
-                        dless_cap_start_ofo,
-                        dless_cap_start_spin
+                        dless_cap_start_mobike::float,
+                        dless_cap_start_ofo::float,
+                        dless_cap_start_spin::float
                         from final_db
                         where dless_trips_all > 0
                         """, con=conn)
@@ -330,7 +333,7 @@ if __name__ == "__main__":
 
     '''
     Notes for Noah:
-        * Jump purposefully removed here as it's highly unlikely we'll get better geocoordinate data for them
+        * Updated Script 6/12/2018 to add back in Jump based on anticipation of new data arriving
         * We only care about dockless starts because where a person ends a dockless trip has no bearing on CaBi station Capacity
     '''
     '''
@@ -355,7 +358,7 @@ if __name__ == "__main__":
                             start_anc,
                             count(*) as start_anc_trips
                             FROM dockless_trips_geo
-                            WHERE operatorclean != 'jump' and start_anc is not null
+                            WHERE start_anc is not null
                             group by 1) as start_anc
                             /* Count of dockless end anc trips*/
                             LEFT JOIN
@@ -363,7 +366,7 @@ if __name__ == "__main__":
                             end_anc,
                             count(*) as end_anc_trips
                             FROM dockless_trips_geo
-                            WHERE operatorclean != 'jump' and end_anc is not null
+                            WHERE end_anc is not null
                             group by 1) as end_anc
                             ON start_anc.start_anc = end_anc.end_anc
                             /* Count of Total Dockless Trips*/
@@ -371,7 +374,7 @@ if __name__ == "__main__":
                             (SELECT DISTINCT
                              count(*) as dless_total_trips
                              FROM dockless_trips_geo
-                             where operatorclean != 'jump')  as tot
+                             )  as tot
                              on start_anc.start_anc = start_anc.start_anc
                              /* Count of Total DC to DC CaBi Trips during dockless pilot*/
                              LEFT JOIN
@@ -427,7 +430,7 @@ if __name__ == "__main__":
 
     '''
     Notes for Noah:
-        * Jump purposefully removed here as it's highly unlikely we'll get better geocoordinate data for them
+        * Updated Script 6/12/2018 to add back in Jump based on anticipation of new data arriving
         * We'll need to adjust the cabi_trip data manually to line up with pilot depending on what data we get
         * This query takes about a minute to run, be patient
 
