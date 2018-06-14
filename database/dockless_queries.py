@@ -129,11 +129,11 @@ def dockless_active_users(conn):
                             operatorclean,
                             extract(month from max(startutc)::date) as max_month
                             from dockless_trips
-                            where operatorclean in ('lime', 'spin', 'mobike')
+                            where operatorclean not in ('ofo')
                             group by 1
                             order by 1) as max_month
                             on trips.operatorclean = max_month.operatorclean
-                            where trips.operatorclean in ('lime', 'spin', 'mobike')
+                            where trips.operatorclean not in ('ofo')
                             group by 1, 2, 3
                             order by 1, 2, 3) as max_month_trips
                         group by 1, 2
@@ -148,16 +148,7 @@ def dockless_active_users(conn):
                         from ofo_users
                         group by 1, 2
                         order by 1, 2)
-                        union
-                        /*jump users*/
-                        (select distinct
-                        'jump' as operatorclean,
-                        userid,
-                        min(usage_month)::date as start_active_date,
-                        (date_trunc('month', MAX(usage_month)) + interval '1 month')::date - 1 AS end_active_date
-                        from jump_users
-                        group by 1, 2
-                        order by 1, 2)) as dless_users
+                        ) as dless_users
                         ON ds.weather_date BETWEEN dless_users.start_active_date AND dless_users.end_active_date
                         where ds.weather_date>= '2017-09-09'
                         GROUP BY 1, 2

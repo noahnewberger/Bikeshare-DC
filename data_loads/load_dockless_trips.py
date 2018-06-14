@@ -61,8 +61,14 @@ if __name__ == "__main__":
     uf.set_env_path()
     conn, cur = uf.aws_connect()
     # Read in Dockless Trips Data
-    csv_name = "Updated_Cleaned_Data_May18"
-    trips_df = pd.read_csv(os.path.join("data", csv_name + ".csv"), index_col=[0], dtype=str)
+    csv_name = "Updated_Cleaned_Data_June8th_UptoMay"
+    trips_df = pd.read_csv(os.path.join("data", csv_name + ".csv"), dtype=str)
+    # Drop Scooter Only Operators
+    trips_df = trips_df[~trips_df['operator'].isin(['Bird', 'Skip'])]
+    # Drop records in May 2018, will not be evaluating since missing some
+    trips_df = trips_df[pd.to_datetime(trips_df['start_time_est']) < '2018-05-01']
+    trips_df.reset_index(inplace=True)
+    trips_df.drop(['index'], axis=1, inplace=True)
     # Generate Tripid, since blank is data from DDOT
     trips_df['trip_id'] = pd.Series(trips_df.index + 1).astype(str).apply(lambda x: x.zfill(5))
     # Create a new trip_id that includes the first letter of the operator name
@@ -76,7 +82,6 @@ if __name__ == "__main__":
     # Output final dataframe
     outname = csv_name + "pipe_delimited"
     trips_df.to_csv(os.path.join("data", outname + ".csv"), index=False, sep='|')
-    print(trips_df.columns)
     # Create Database
     create_dockless_trips(cur)
     # Load to Database

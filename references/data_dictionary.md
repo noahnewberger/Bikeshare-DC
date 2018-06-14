@@ -19,12 +19,11 @@
 * [dockless_bikes_api](#dockless_bikes_api): Dockless Bikeshare Public API total bikes available per day for Jumps, Limebike and Spin.  Thanks to Daniel Schep who had been pulling from the APIs since February and graciously shared his data with us.
 * [dockless_price](#dockless_price): Table of pricing data in thirty minute intervals for all DC dockless operaters except Jump, which has its own table.
 * [dockless_summary](#dockless_summary): Dockless Monthly summary data provided by DDOT that shows total monthly trips and bike used/available by operator.  Very incomplete and varying methodology, do not use unless totally necessary.
-* [dockless_trips](#dockless_trips): Dockless trips for all operators that part of the DDOT dockless bikeshare pilot from September 2017 - April 2018.  Jump Data missing for March and April
+* [dockless_trips](#dockless_trips): Dockless trips for all operators that part of the DDOT dockless bikeshare pilot from September 2017 - April 2018.
 * [dockless_trips_geo](#dockless_trips_geo): Dockless_trips + geographic indicators like trip distance, closest CaBi station to start and end, whether or not a start and end location is within a quarter mile of a CaBi station, and ANC of the start and end location
 * [dockless_trips_org](#dockless_trips_org): Dockless trips for all operators that part of the DDOT dockless bikeshare pilot from September 2017 - February 2018.  Mobike data missing for February.  Spin data missing for January
 * [final_db](#final_db): Final database pulling from all other tables to aggegrate data to the daily level for our machine learning model
 * [jump_price](#jump_price): Pricing schedule for Dockless operator Jump
-* [jump_users](#jump_users): Jump provided a user table by month instead of including userid in dockless_trips due to privacy concerns
 * [nats_attendance](#nats_attendance): Washington Nationals Schedule for 2010-2018 scraped from [Baseball Reference](https://www.baseball-reference.com/teams/WSN/2010-schedule-scores.shtml) due to accuracy issues with MLB API.  Home game and attendance used as features in machine learning
 * [ngh](#ngh): DC Neighborhood Clusters converted from [Open Data DC GeoJSON](http://opendata.dc.gov/datasets/neighborhood-clusters)
 * [ofo_users](#ofo_users): Ofo provided a user table by month instead of including userid in dockless_trips due to privacy concerns
@@ -1215,14 +1214,6 @@ Attribute | Type | Nullable | Description
 min_seconds | integer | NO | Low end of time range for price in seconds up to 24 hours
 max_seconds | integer | YES | High end of time range of price in seconds up to 24 hours
 cost | numeric | YES | Cost of Jump trip
-
-**jump_users**<a id="jump_users"></a>: Jump provided a user table by month instead of including userid in dockless_trips due to privacy concerns
-
-Attribute | Type | Nullable | Description
---- | --- | --- | ---
-userid | character varying | YES | User ID
-trips | integer | YES | Number of trips taken by user per month
-usage_month | date | YES | Usage Month
 
 **nats_attendance**<a id="nats_attendance"></a>: Washington Nationals Schedule for 2010-2018 scraped from [Baseball Reference](https://www.baseball-reference.com/teams/WSN/2010-schedule-scores.shtml) due to accuracy issues with MLB API.  Home game and attendance used as features in machine learning
 

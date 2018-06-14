@@ -78,7 +78,7 @@ if __name__ == "__main__":
     '''
 
     '''
-    Frequency of Trips per user (Pareto Chart) for each dockless operator (except for Mobike)
+    Frequency of Trips per user (Pareto Chart) for each dockless operator (except for Mobike, no user ids)
     [[PLOT]]
     '''
     df = pd.read_sql("""select distinct
@@ -91,7 +91,7 @@ if __name__ == "__main__":
                         userid,
                         count(*) as user_trips
                         from dockless_trips
-                        where operatorclean in ('mobike', 'lime', 'spin')
+                        where operatorclean in ('lime', 'spin', 'jump')
                               AND userid != '0'
                         group by 1, 2
                         order by operatorclean, count(*))
@@ -102,15 +102,6 @@ if __name__ == "__main__":
                         userid,
                         sum(trips) as user_trips
                         from ofo_users
-                        group by 1, 2
-                        order by operatorclean, sum(trips))
-                        union
-                        /*jump users*/
-                        (select distinct
-                        'jump' as operatorclean,
-                        userid,
-                        sum(trips) as user_trips
-                        from jump_users
                         group by 1, 2
                         order by operatorclean, sum(trips))) as user_freqs
                         group by 1, 2
@@ -133,8 +124,7 @@ if __name__ == "__main__":
     print(df.head())
     '''
     Notes for Noah:
-        * This plot will be done in Excel, no need to do anything with these results
-        * Please keep this query since it  will be leveraged for next plot
+        * This query since it  will be leveraged for next plot
     '''
 
     '''

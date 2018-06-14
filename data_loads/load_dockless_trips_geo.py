@@ -2,7 +2,7 @@ import util_functions as uf
 
 
 def create_dockless_trips_geo(cur):
-    # This script creates the dockless trips AWS table, note that Jump data is not accurate due to two decimal lat, lon
+    # This script creates the dockless trips AWS table
     cur.execute("""
     DROP TABLE IF EXISTS dockless_trips_geo;
     CREATE TABLE dockless_trips_geo as

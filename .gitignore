@@ -25,3 +25,7 @@ database/Archive/db_built_test\.py
 *.txt
 
 *.html
+
+exploratory_analysis/\.ipynb_checkpoints/
+
+maps/\.ipynb_checkpoints/
