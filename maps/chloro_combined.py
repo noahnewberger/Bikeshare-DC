@@ -103,13 +103,12 @@ def gen_chloro(title, color_column):
     # Generate Chloropeth
     chart = alt.Chart(data_geo, title=title).mark_geoshape(
         fill='lightgray',
-        stroke='white'
+        stroke='black'
     ).properties(
-        projection={'type': 'albersUsa'},
         width=400,
         height=400
     ).encode(
-        alt.Color(color_column, type='quantitative')
+        alt.Color(color_column, type='quantitative', scale=alt.Scale(scheme='bluegreen'))
     )
     return chart
 
@@ -127,11 +126,11 @@ if __name__ == "__main__":
     json_features = json.loads(gdf_merged.to_json())
     data_geo = alt.Data(values=json_features['features'])
     # Generate Chloropaths
-    cabi_start_chart = gen_chloro(title='Cabi Starts', color_column='properties.cabi_start_perc')
+    # cabi_start_chart = gen_chloro(title='Cabi Starts', color_column='properties.cabi_start_perc')
     cabi_end_chart = gen_chloro(title='Cabi Ends', color_column='properties.cabi_end_perc')
-    dless_start_chart = gen_chloro(title='Dockess Starts', color_column='properties.dless_start_perc')
+    # dless_start_chart = gen_chloro(title='Dockess Starts', color_column='properties.dless_start_perc')
     dless_end_chart = gen_chloro(title='Dockess Ends', color_column='properties.dless_end_perc')
-    combined_chloro = (cabi_start_chart | cabi_end_chart) & (dless_start_chart | dless_end_chart)
-    combined_chloro = alt.Chart.configure_legend(combined_chloro, orient='bottom-left')
+    combined_chloro = (cabi_end_chart | dless_end_chart)
+    # combined_chloro = alt.Chart.configure_legend(combined_chloro, orient='bottom-left')
     combined_chloro.save('combined_chloro.html')
 

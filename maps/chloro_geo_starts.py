@@ -46,13 +46,12 @@ def gen_chloro(title, color_column):
     # Generate Chloropeth
     chart = alt.Chart(data_geo, title=title).mark_geoshape(
         fill='lightgray',
-        stroke='white'
+        stroke='black'
     ).properties(
-        projection={'type': 'albersUsa'},
         width=400,
-        height=400
+        height=400,
     ).encode(
-        alt.Color(color_column, type='quantitative')
+        alt.Color(color_column, type='quantitative', scale=alt.Scale(scheme='bluegreen'))
     )
     return chart
 
