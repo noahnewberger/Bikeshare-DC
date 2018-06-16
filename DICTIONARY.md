@@ -1,5 +1,4 @@
-# Georgetown Capstone Team Bikeshare Data Dictionary
-
+# Bikeshare DC: Data Dictionary
 
 
 #### Table of Contents

@@ -6,7 +6,7 @@ if __name__ == "__main__":
     uf.set_env_path()
     conn, cur = uf.aws_connect()
 
-    # Trips by Date and Operator
+    # Count of Total Bikes and Average bike age for all CaBi Trips
     df = pd.read_sql("""select distinct
                         count(*) as total_bikes_used,
                         avg(bike_age) as bike_age
