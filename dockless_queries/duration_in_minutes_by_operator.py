@@ -6,7 +6,7 @@ if __name__ == "__main__":
     uf.set_env_path()
     conn, cur = uf.aws_connect()
 
-    # Simply diagnistics of trip distance by operaot
+    # Simply diagnistics of trip distance by operator
     df = pd.read_sql("""select distinct operatorclean,
                         min(EXTRACT(EPOCH FROM enddate - startdate)::int/60) as min_time_diff,
                         mean(EXTRACT(EPOCH FROM enddate - startdate)::int/60) as mean_time_diff,
