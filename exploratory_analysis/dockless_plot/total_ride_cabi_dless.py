@@ -13,7 +13,7 @@ from dockless_exploration_graphs import *
 
 if __name__ == '__main__':
     conn = read_only_connect_aws()
-
+    plt.style.use('fivethirtyeight')
     '''Stacked Bar Chart showing % of trips taken by users who took 5 trips or less
     vs greater than 5 trips. One bar for each operator for the entire pilot
     (except Mobike)

@@ -17,7 +17,7 @@ from dockless_exploration_graphs import *
 if __name__ == '__main__':
 
     conn = read_only_connect_aws()
-
+    plt.style.use('fivethirtyeight')
     df = pd.read_sql(
         """select
             month,

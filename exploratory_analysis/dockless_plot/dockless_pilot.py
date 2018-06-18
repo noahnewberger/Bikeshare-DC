@@ -30,6 +30,7 @@ if __name__ == '__main__':
         axis.xaxis.label.set_visible(False)
         axis.yaxis.label.set_visible(False)
 
+    plt.style.use('fivethirtyeight')
     conn = read_only_connect_aws()
     main = pd.read_sql(
         """select distinct
@@ -55,9 +56,6 @@ if __name__ == '__main__':
     dr = open_drive()
     f, axes = plt.subplots(1, 2, sharey='row', figsize=(20, 10))
 
-    plt.suptitle(
-        "Daily Percentage of Total Trips over the Dockless Pilot Period",
-        fontsize=16, fontweight=0)
     axes[0].set_title(
         "First Four Trial Months (September 10, 2017 - December 31, 2017)")
     axes[1].set_title(
