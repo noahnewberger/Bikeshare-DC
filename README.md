@@ -3,12 +3,12 @@ Cohort 11 Capstone Project for the Certificate of Data Science at Georgetown Uni
 _Sebastian Bautista, Travis Gervais, Noah Newberger, and Mark Sussman_
 
 ## README Contents
-1. [Abstract](#Abstract)
-1. [NDA Explanation](#NDA-Explanation)
-1. [Background Information](#Background-Information)
-1. [Data Architecture](#Data-Architecture)
-1. [Capital Bikeshare Exploration](#Capital-Bikeshare-Exploration)
-1. [Machine Learning](#Machine-Learning)
+1. [Abstract](#abstract)
+1. [NDA Explanation](#nda-explanation)
+1. [Background Information](#background-information)
+1. [Data Architecture](#data-architecture)
+1. [Capital Bikeshare Exploration](#capital-bikeshare-exploration)
+1. [Machine Learning](#machine-learning)
 
 ## Abstract
 
