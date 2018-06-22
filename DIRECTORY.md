@@ -15,7 +15,7 @@
 │   └── data           <- Raw Data to be wrangled
 │
 ├── dockless_queries   <- Scripts to provide data validation feedback to DDOT
-│                          regarding quality of dockless data provided.
+│                         regarding quality of dockless data provided.
 │
 ├── machine_learning   <- Scripts used to build Machine Learning models 
 │
