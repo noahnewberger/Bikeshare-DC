@@ -12,8 +12,6 @@ data_loads/__pycache__/util_functions\.cpython-36\.pyc
 
 data_loads/\.~lock\.dockless_summary_20180403_tmp\.csv#
 
-*.png
-
 *.pyc
 
 database/Archive/db_built_test\.py
@@ -25,3 +23,19 @@ database/Archive/db_built_test\.py
 *.txt
 
 *.html
+
+exploratory_analysis/\.ipynb_checkpoints/
+
+maps/\.ipynb_checkpoints/
+
+exploratory_analysis/Daily Percentage_Total Dockless Trips_vs_Total CaBi DC to DC, Casual\.png
+
+exploratory_analysis/Daily Percentage_Total Dockless Trips_vs_Total CaBi DC to DC\.png
+
+machine_learning/lasso_casual_impact\.png
+
+machine_learning/lasso_total_impact\.png
+
+machine_learning/rf_casual_impact\.png
+
+machine_learning/rf_total_impact\.png

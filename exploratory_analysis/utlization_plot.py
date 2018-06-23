@@ -15,6 +15,9 @@ import datetime
 if __name__ == '__main__':
     conn = read_only_connect_aws()
 
+    ''' Daily Utilization using only API data for Jump, Spin and Lime vs CaBi System Wide
+        [[PLOT]]
+    '''
     df = pd.read_sql("""SELECT
                         api.*,
                         cabi_bikes_avail,

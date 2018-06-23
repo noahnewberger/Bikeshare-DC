@@ -20,11 +20,13 @@ if __name__ == '__main__':
     df = pd.read_sql("""select distinct
                         date,
                         /* % of trips that Start within quarter mile of CaBi Station*/
+                        dless_geo_start_jump,
                         dless_geo_start_lime,
                         dless_geo_start_mobike,
                         dless_geo_start_ofo,
                         dless_geo_start_spin,
                         /* % of trips that End within quarter mile of CaBi Station*/
+                        dless_geo_end_jump,
                         dless_geo_end_lime,
                         dless_geo_end_mobike,
                         dless_geo_end_ofo,
