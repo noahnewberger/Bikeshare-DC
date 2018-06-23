@@ -9,7 +9,6 @@ if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
     conn, cur = uf.aws_connect()
-
     '''
     Dockless Impact Derived from Machine Learning Model
     [[PLOT]]

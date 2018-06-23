@@ -15,9 +15,11 @@
 │   └── data           <- Raw Data to be wrangled
 │
 ├── dockless_queries   <- Scripts to provide data validation feedback to DDOT
-│                          regarding quality of dockless data provided.
+│                         regarding quality of dockless data provided.
 │
 ├── machine_learning   <- Scripts used to build Machine Learning models 
+│   └── visualizations <- Scripts (final plots) and notebooks (exploratory plots) 
+│                         that generate machine learning related plots
 │
 ├── maps               <- Scripts used to build Altair Chloropeths of Dockless and CaBi Trip by ANC
 │
