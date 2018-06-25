@@ -1,22 +1,17 @@
-import sys
-sys.path.append("..")
-import numpy as np
-from read_aws import *
-from google_drive_push import *
-import seaborn as sns
-import matplotlib.pyplot as plt
-from pprint import pprint
-import calendar
-import re
 from dockless_exploration_graphs import *
-import datetime as dt
+
 if __name__ == '__main__':
     '''
     Distribution of Dockless Trips by Hour
     [[PLOT]]
     '''
     conn = read_only_connect_aws()
-
+    try:
+        os.mkdir('./Load Graphs')
+    except FileExistsError:
+        pass
+    load_path = './Load Graphs/'
+    google_drive_location = '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3'
     df_dless = pd.read_sql("""SELECT DISTINCT
                         op_trips.*,
                         dow_total_trips,
@@ -45,7 +40,6 @@ if __name__ == '__main__':
                         ORDER BY 1, 2;
                         """, con=conn)
     print(df_dless.head())
-
 
     df_cabi = pd.read_sql("""SELECT DISTINCT
                         op_trips.*,
@@ -118,22 +112,30 @@ if __name__ == '__main__':
     # Open google drive connection
     dr = open_drive()
 
-    df_dless['trips_standardized'] = df_dless['dockless_trips'] / df_dless['dockless_trips'].sum()
+    df_dless['trips_standardized'] = (
+        df_dless['dockless_trips'] / df_dless['dockless_trips'].sum())
     df_cabi_mems = df_cabi[df_cabi['member_type'] == 'Member']
     df_cabi_cas = df_cabi[df_cabi['member_type'] == 'Casual']
-    df_cabi_mems['trips_standardized'] = df_cabi_mems['cabi_trips'] / df_cabi_mems['cabi_trips'].sum()
-    df_cabi_cas['trips_standardized'] = df_cabi_cas['cabi_trips'] / df_cabi_cas['cabi_trips'].sum()
+    df_cabi_mems['trips_standardized'] = (
+        df_cabi_mems['cabi_trips'] / df_cabi_mems['cabi_trips'].sum())
+    df_cabi_cas['trips_standardized'] = (
+        df_cabi_cas['cabi_trips'] / df_cabi_cas['cabi_trips'].sum())
     df = pd.concat([df_dless, df_cabi_mems, df_cabi_cas])
     df['member_type'].fillna('Dockless', inplace=True)
 
-    g = sns.factorplot(x='day_of_week',y='trips_standardized',hue='op_status',col='member_type',
-        data=df,kind='bar',palette='muted', col_order=['Member','Casual','Dockless'], legend=False, size=4, aspect=2)
+    g = sns.factorplot(
+        x='day_of_week', y='trips_standardized',
+        hue='op_status', col='member_type', data=df, kind='bar',
+        palette='muted', col_order=['Member', 'Casual', 'Dockless'],
+        legend=False, size=4, aspect=2)
     g.set_xticklabels(
-            ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], rotation=45,
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
             fontsize=8)
     g.set_xlabels('Day of the Week', fontsize=10)
     g.set_ylabels('Standarized Trips', fontsize=10)
     g.fig.legend(loc='center', title='Service Block')
     all_in_one_save(
-        "All Hours of the Week", "C:/Users/Noah/Bikeshare-DC_Old/For Upload", dr,
-        '1LRJWj6wLBWvyBJbN93jXA2dpgF3BLrN3')
+        "All Hours of the Week", load_path, dr,
+        google_drive_location)
+    # Delete Graphs from Directory
+    shutil.rmtree(load_path)

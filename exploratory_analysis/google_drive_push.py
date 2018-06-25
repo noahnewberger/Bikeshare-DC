@@ -5,7 +5,6 @@ import os
 import matplotlib.pyplot as plt
 import sys
 
-sys.path.append("C:/Users/Noah/Bikeshare-DC_Ol/scripts")
 TIMESTR = time.strftime("%Y%m%d_%H%M%S")
 
 

@@ -6,10 +6,9 @@ import time
 from pathlib import Path
 from dotenv import load_dotenv
 
-env_path = 'C:/Users/Noah/Bikeshare-DC_Old/scripts/env_readonly.env'
-
 
 def read_only_connect_aws():
+    env_path = 'env_readonly.env'
     load_dotenv(dotenv_path=env_path)
     host = "bikeshare-restored.cs9te7lm3pt2.us-east-1.rds.amazonaws.com"
     port = 5432
