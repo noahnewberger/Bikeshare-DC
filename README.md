@@ -38,20 +38,52 @@ The data that was gathered for this project fell into one of three categories:
 3. Misc Data - Data on a variety of factors, such as weather and population, that we believe would have an impact on the demand for bikeshares in Washington, DC. 
 
 Most of the data that was used for this project is publicly available data which we either downloaded, scraped or used an API to pull down from a website. Exceptionally, we received dockless trip data from DDOT and dockless bikes available data from [Daniel Schep](https://schep.me/) who had already put together a site to track all the bikeshare systems in DC.  He was kind enough to share his stored API data with us so that we could actually analyze dockless bikeshare utilization rates, as the data we received from the operators was not reliable.  As we began sourcing our data, we set up a meeting with DDOT to explain to them the goals and scope of our project and offer our assistance to help analyze the efficacy of the pilot program.  DDOT  agreed to share the data that they had with us on the condition that we share our findings with them at the end of our analysis and we sign a nondisclosure agreement agreeing not to divulge any of the dockless data to the general public.
+
 Under the rules of the pilot program, the dockless bikeshare operators are required to self-report data on a monthly basis to DDOT. The monthly reports include data on trip start and stop times, trip start and stop locations, and user id among other fields. The CSVs that we received required a significant amount of processing. For example, not every operator reported latitude and longitude trips starts/ends to the enough precision to determine actual location, which impacted our ability to compare trip locations across operators.  There were also inconsistencies with the start and end times for trips in the data that the dockless operators were self-reporting. In one extreme case it was discovered that the hours were missing from the timestamps for all trips for a particular operator. In another case, there were instances where the reported end time occurred before the reported start time which resulted in calculations for negative trip durations. 
 Table descriptions and data dictionaries of all the data sources we used as can be found in our Github repo’s [data dictionary](https://github.com/georgetown-analytics/DC-Bikeshare/blob/master/DICTIONARY.md).
 
 
 ## Data Architecture
 
+Diagram 1 shows the relationship of all CaBi related data.  Our main CaBi dataset, a series of publically available CSVs stored in an AWS S3 store provide start and end timstamps, start and end station ids, bike ids and trip type (member vs casual) for all 20 million trips taken since CaBi's inception.
+
+In order to enhance the CaBi trip data, we leverage the CaBi API, specifically the system and station information.  In order to assign a CaBi Region (ie DC, Arlington, Alexandria) to each trip start and end, we joined the region_id from the system information to the foreign key region_id on the station information and then joined to the trip start and end based on station_id.  Having region_id at the trip start and end level, allowed us to break out trip counts by region combination and ultimtely limit our trip population to trips taken within DC as the point of comparison to dockless trips which bounded within DC.
+
+CaBI Station Outage data scraped from [cabi tracker](http://cabitracker.com) by automatically downloading csv reports from every day since April 2011, providing the duration for each instance a station was either empty or full.
+
+DDOT provided us with CaBi memberships (Annual, Monthly and Day Key) purchased per month going back to September 2010.  This data allowed us to estimate active memberships by assuming annual members are activate for the 11 months after membership purchase, while monthly memberships are only active for the month of purchase.  Day Key members were assumed to activate from the month of purchase in perpetuity.  The overwhelming majority of CaBi members are annual members.
+
 **Diagram 1:** Capital Bikeshare Data Flow
 ![alt text](./readme_images/Data_Architecture_CaBiData.png "")
+
+Diagram 2 shows the relationship of all dockless pilot related data.  The dockless trip data came in CSVs directly from DDOT and is similar to the CaBi Trip data, exchanging station information for start and end geo-coordinates 
+
+CaBi station information is used here to determine closest CaBi Station that we used in some of our exploratory analysis.  We also used 
+CaBi station outage data to determine if closest CaBi station had bikes when dockless trip started, but this analysis ended up not being material. 
+
+We also compiled the pricing schemes for each dockless operator to calculate trip cost, but we didn't ended up not leveraging this data since start and end timestamps where suspect or non-existant, especially for Mobike.
+
+Dockless bikes available on a daily basis comes from API for Jump, Spin and Lime, as Ofo and Mobike APIs not reliable (thanks again Daniel!).  We used to analyze utilization rates as compared to CaBi's rates.
 
 **Diagram 2:** Dockless Bikeshare Data Flow
 ![alt text](./readme_images/Data_Architecture_DocklessData.png "")
 
+Diagram 3 shows are secondary data sources.  Weather data is by far our most important secondary data source, which came from the [Dark Sky API](https://darksky.net/dev/docs)  The attributes shown below are just the most important of the many attributes available in the API.
+
+WABA Bike Events was compiled using the Google Calendar API to pull all events from 2014 to present from Washington Area Bike Association [public calendar](http://www.waba.org/events/calendar/).  We then used domain knowledge to select those events to keep as significant.
+
+[Open Data DC](http://opendata.dc.gov/datasets) has lots of great GIS data for DC.  We used the Advisory Neighborhood Commission GeoJSON to assign each dockless trip an ANC.  This geographic categorization was then leveraged to determine concentration of trips used
+primarily for maps generated at the request of DDOT.  These maps are available in the appendix of our report.
+
+We scraped the Washington Nationals 2010-2018 schedule and attendance data from [Baseball Reference](https://www.baseball-reference.com/teams/WSN/)
+
+DC population data came from the DC Office of Planning and the American Community Survey.
+
 **Diagram 3:** Secondary Data Flow
 ![alt text](./readme_images/Data_Architecture_SecondaryData.png "")
+
+
+Diagram 4 shows how we brought all our data sources toget together into a AWS PostgreSQL database instance.  We used the [psycopg2](http://initd.org/psycopg/docs/) Python package to load all tables to our database.  The final database to be used for machine learning  generated by combining all these sources together and was feed into our machine learning pipeline so that we could predict daily CaBi demand for DC to DC rides for the dockless pilot period.
 
 **Diagram 4:** Data Science
 ![alt text](./readme_images/Data_Architecture_DataFlowDiagram2.png "")
@@ -63,7 +95,11 @@ We began our exploratory analysis by looking at the growth in the CaBi daily tri
 **Figure 1:** Average daily CaBi Trips by Year (Left: System Wide, Right: DC to DC trips)
 ![alt text](./readme_images/Capital_Bikeshare_Exploration_DailyCabiTrips.png "")
 
-We also wanted to determine if behavior differed between the two user categories, member and casual. Members are defined as CaBi users that have purchased either an annual or monthly membership. Casual users are defined as users that have purchased a three-day, 24-hour pass or single trip pass (starting in June 2016). We examined the behavior of these two user types by plotting the bike utilization rate for members and casual users by year, month and day of the week in order to determine if there were significant differences in the usage patterns between these two groups. The bike utilization rate is defined as \frac{Total number of trips per day}{Total number of available bikes}.  In Figure 2, we examine the average bike utilization rate by year by creating one subplot which shows the bike utilization rate for members and another subplot for the bike utilization rate of casual riders. In 2011, CaBi members accounted for a little under 2.5 rides per day for each active bike. That number grew to around 2.6 rides per day in 2012 before it slowly started declining to a little over 1.5 in 2017. What this shows is that by 2011 there was already a strong demand among members when CaBi had a relatively small fleet. CaBi has added bikes to their fleet over the years at a rate which has outpaced the growth in rides per day by CaBi members. The bike utilization rate for casual users has remained fairly constant since 2011. The third subplot in Figure 2 shows that from 2011 until 2016 around 80% of CaBi’s usage is coming from members. This percentage begins to dip in 2016 and 2017; one possible explanation being that CaBi introduced $2 single trip 30 minute rides in [June 2016](https://ggwash.org/view/41888/2-will-now-buy-you-a-capital-bikeshare-trip). This makes it easier for casual users to use CaBi, as they no longer need to purchase a 24-hour or 3 day pass.
+We also wanted to determine if behavior differed between the two user categories, member and casual. Members are defined as CaBi users that have purchased either an annual or monthly membership. Casual users are defined as users that have purchased a three-day, 24-hour pass or single trip pass (starting in June 2016). We examined the behavior of these two user types by plotting the bike utilization rate for members and casual users by year, month and day of the week in order to determine if there were significant differences in the usage patterns between these two groups. The bike utilization rate is defined as:
+
+![img](http://latex.codecogs.com/svg.latex?%5Cfrac%7BtotalTrips%7D%7BtotalAvailableBikes%7D)
+
+In Figure 2, we examine the average bike utilization rate by year by creating one subplot which shows the bike utilization rate for members and another subplot for the bike utilization rate of casual riders. In 2011, CaBi members accounted for a little under 2.5 rides per day for each active bike. That number grew to around 2.6 rides per day in 2012 before it slowly started declining to a little over 1.5 in 2017. What this shows is that by 2011 there was already a strong demand among members when CaBi had a relatively small fleet. CaBi has added bikes to their fleet over the years at a rate which has outpaced the growth in rides per day by CaBi members. The bike utilization rate for casual users has remained fairly constant since 2011. The third subplot in Figure 2 shows that from 2011 until 2016 around 80% of CaBi’s usage is coming from members. This percentage begins to dip in 2016 and 2017; one possible explanation being that CaBi introduced $2 single trip 30 minute rides in [June 2016](https://ggwash.org/view/41888/2-will-now-buy-you-a-capital-bikeshare-trip). This makes it easier for casual users to use CaBi, as they no longer need to purchase a 24-hour or 3 day pass.
 
 **Figure 2:** Bike Utilization Rate for CaBi by Year
 
@@ -81,6 +117,49 @@ Figure 4 shows the bike utilization rate for members and casual users by day of 
 
 ## Machine Learning
 
+For our analysis, we use two competing machine learning models. In our models an instance is a single day and our goal is to predict the number of CaBi trips that start in DC and end in DC, taken on each day of the pilot program from September 9, 2017 to April 30, 2018. We only included DC to DC trips in our model because the pilot program restricts the dockless bikeshare operators to operate within the District of Columbia. We were able to determine the region where trips started and ended by using data that we collected from the CaBi API.  The time frame of our training data is limited to the period of time from January 1, 2013 to September 8, 2017. We started the training set in 2013 because of the rapid growth during the first two years of operation as shown in Figure 1, as well as data availability issues from the same time period.
+
+#### Lasso
+
+We identified 18 features that we believed would be important to incorporate into our model. These features included daylight hours, apparent high temperature, U.S. holidays, and Washington Nationals games. We decided to use a smaller feature set with the Lasso model in order to minimize the chances of including collinear variables as features in our model. Multicollinearity among explanatory features in a linear model can have detrimental effects on coefficient estimates. We also wanted to drop features that we believed would not contribute to the predictive power of our model, such as the duration that CaBi stations in Alexandria were full on a given day.  We also dropped some features because of leakage issues - for example, some of our features are related to the duration that CaBi stations are empty or full in each day. Although these features are extremely predictive of CaBi trips, trips and empty duration are simultaneously co-determined, so we drop these features because of endogeneity issues.
+
+Next, we preprocessed the data. In order to incorporate data from multiple years into our model, we performed cyclical encoding on the day of year to ensure continuity between December and January. We used PolynomialFeatures to create quadratic and interaction terms that we could incorporate into our model.   This introduced complexity to the model by ultimately turning our 18 features into 180 features. Creating interaction terms for our analysis was an important step because we believed that combinations of certain variables could have different impacts on CaBi demand, and these terms allow for a more complex linear relationship between our features and target variable.  For example, behavior might differ between a cold day with rain and a warm day with rain. We dropped any quadratic variables that were redundant such as those created from our binary features, e.g. U.S. holiday squared. We also standardized our continuous variables by passing them through StandardScaler so that they would all have a mean of 0 and standard deviation of 1. For our binary features, we used MinMaxScaler to ensure that if any changes were made to those features when we applied PolynomialFeatures to them, they would be returned to 0 and 1. 
+
+We used the Rank2D visualizer from the Yellowbrick package in order to visualize which of our 18 features had the strongest correlation. Not surprisingly, variables like daylight and apparent high temperature were positively correlated. Figure 5 shows a Pearson ranking of the 18 features that were selected for the lasso model (before applying PolynomialFeatures). 
+
+**Figure 5**: Pearson Ranking of 18 Features Incorporated into Lasso Model
+![alt text](./readme_images/Machine_Learning_lasso_rank2d.png "")
+
+In order to fit our model, we used 5-fold cross-validation and an alpha search space of 250 logarithmically spaced points between .01 and 10.  The highest performance we got from the lasso model had an alpha of approximately 4.6 and a mean R2 value of 0.852 with a standard deviation of 0.0175. The model tended to over-predict the number of CaBi rides taken per day which is evidenced by the sum of the residuals being negative. Figure 6 shows a ranking of feature importances for the 18 features that were selected for the lasso model. The three features that had the strongest positive correlation for the number of CaBi trips were apparent high temperature, DC population and whether or not there was a Washington Nationals doubleheader happening on that day. Surprisingly rain had a slight positive correlation. One possible explanation is that rain might be less likely to discourage usage on warmer summer days and that is enough to counterbalance a cold rainy day.  The three features with the greatest negative correlation were US holiday, precipitation probability and the humidity. It makes sense that US holidays would see fewer rides as there would be less usage due to the absence of commuters.
+
+**Figure 6**: Feature Importance of 18 Features Selected for Lasso Model
+![alt text](./readme_images/Machine_Learning_lasso_featureimportances18.png "")
+
+![alt text](./readme_images/Machine_Learning_lasso_resplot.png "")
+
+#### Random Forest
+
+We wanted to experiment with a nonlinear regression method since we had already employed a linear regression model by using Lasso. Random forest, which uses bagging, seemed like a better option than using a boosting algorithm which could have potentially resulted in overfitting.  Additionally, random forest had the added bonus of not being negatively affected by multicollinearity among features like Lasso is. This enabled us to incorporate a larger set of 49 features into the model. We also did not need to do any preprocessing in terms of scaling or creating polynomial features to deal with interaction terms because of how decision trees consider features sequentially. Figure 7 shows the features ranked by importance, which basically means these features were used to create partitions. The five most important features for this model were apparent high temperature, number of active monthly CaBi users, apparent low temperature, the day of the year, and the sunset time. Note that these feature importances are less informative than those returned by Lasso since they don’t tell us anything about the direction of the effect, just relative magnitude.
+
+**Figure 7**: Feature Importance of 49 Features Selected for Random Forest Model
+![alt text](./readme_images/Machine_Learning_rf_featureimportances.png "")
+
+In order to tune our hyperparameters for this model, we used RandomizedSearchCV with 100 iterations per fold to identify which hyperparameters to tune. There were 5,760 unique combinations of hyperparameters that were possible through the randomized search, and we tried 100. After confirming that this new model performed better than the untuned model, we used GridSearchCV with a smaller set of hyperparameters to then select the most performant combination. After performing 5-fold shuffled cross-validation we achieved a mean R2 value of 0.902 with a standard deviation of 0.007. This model also tended to overpredict the number of CaBi rides.
+
+![alt text](./readme_images/Machine_Learning_rf_resplot.png "")
+
+#### Results
+
+Figure 8 plots the predicted values and the actual values for the number of CaBi rides for every date of the pilot program from September 9, 2017 to April 30, 2018. It also plots the prediction error for each day of the pilot program. Our model tended to overpredict the number of rides, as evidenced by the fact that the error term is less than 0 for most of the days within the pilot program. This suggests that the dockless pilot program might have had an impact on the demand for CaBi since there were fewer CaBi trips taken during the dockless period than our model predicted. 
+
+**Figure 8**: Actual vs. Predicted CaBi Rides during Dockless Pilot
+![alt text](./readme_images/Machine_Learning_rf_total.png "")
+
+
+The remainder of our analysis compares our results from our machine learning model to dockless trip data provided by DDOT and therefore cannot include that in our README file here due to NDA restrictions.
+
 ## Acknowledgements
 
 We'd like to thank Stefanie Brodie, Kim Lucas, and Jonathan Rodgers at the District Department of Transportation for sharing their dockless pilot and Capital Bikeshare data and domain expertise with us.  We'd also like to thank Daniel Schep for sharing his dockless API data with us.  Without his visionary software engineering, we wouldn't have been able to compare CaBi utilization rates with those of the dockless operators.
+
+
