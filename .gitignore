@@ -1,4 +1,5 @@
 .env
+exploratory_analysis\env_readonly.env
 *.csv
 code_snippets/__pycache__/util_functions.cpython-36.pyc
 
