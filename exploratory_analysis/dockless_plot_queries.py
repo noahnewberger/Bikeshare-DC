@@ -48,7 +48,7 @@ if __name__ == "__main__":
                         where dless_trips_all > 0 and date > '2017-09-10';
                      """, con=conn)
     print(df.head())
-    
+
     '''
     Notes for Noah:
         * Should be two plots Cabi Total vs Dockless Total and Cabi Casual Vs Dockless Total

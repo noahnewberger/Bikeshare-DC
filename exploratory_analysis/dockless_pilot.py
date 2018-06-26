@@ -2,6 +2,7 @@ from dockless_exploration_graphs import *
 
 
 def plot_reg_lines(df_s, axis):
+    # Function to create a regression plot and change the x axis to be dates
     df = df_s
     df['index'] = df.reset_index().index.values
     sns.regplot(
@@ -15,10 +16,14 @@ def plot_reg_lines(df_s, axis):
         label='Cabi Casual', color='g')
     axis.set_xlim(0, len(df))
     xticks = axis.get_xticks()
+    # the value of the x axis is the day difference from the starting minimum
+    # start day of the main dataframe.
     xticks = [df['date'].min() + datetime.timedelta(days=d) for d in xticks]
+    # custom list of xticks are now set as tick labels
     axis.set_xticklabels(xticks)
     axis.xaxis.label.set_visible(False)
     axis.yaxis.label.set_visible(False)
+
 
 if __name__ == '__main__':
 
@@ -57,6 +62,7 @@ if __name__ == '__main__':
         "First Four Trial Months (September 10, 2017 - December 31, 2017)")
     axes[1].set_title(
         "Second Four Trial Months (January 1, 2018 - April 30, 2018)")
+    # Adding regression line plots to the subplots
     plot_reg_lines(
         main[main['date'] <= datetime.date(
             year=2017, month=12, day=31)], axes[0])

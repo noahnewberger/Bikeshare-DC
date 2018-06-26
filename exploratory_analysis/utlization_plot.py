@@ -61,7 +61,6 @@ if __name__ == '__main__':
     df_utl.replace(0, np.nan, inplace=True)
     df_utl['date'] = pd.to_datetime(df_utl['date'])
     df_utl['operator'] = df_utl['Category'].str.split('_').str.get(0)
-
     f, ax = plt.subplots(figsize=(20, 10))
     axis = sns.pointplot(
         x='date', y='utilization', hue='operator', data=df_utl, ax=ax,

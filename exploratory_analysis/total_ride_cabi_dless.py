@@ -64,9 +64,9 @@ if __name__ == '__main__':
                 pat.get_x() + .2, pat.get_y() + pat.get_height()/2),
                 fontsize=10)
     axes.set_xlabel('')
+    axes.set_xticks(rotate=90)
     all_in_one_save(
-        "dless usage by {0} trips".format(5),
-        load_path,
-        dr, google_drive_location)
+        "dless usage by {0} trips".format(5), load_path, dr,
+        google_drive_location)
     # Delete Graphs from Directory
     shutil.rmtree(load_path)

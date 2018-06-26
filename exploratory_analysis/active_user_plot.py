@@ -33,22 +33,26 @@ if __name__ == '__main__':
 
     dr = open_drive()
     # Utilization by Vendor
-
+    # Reshaping the data to allow for the hue function to work in seaborn
     df = pd.melt(
         df, id_vars=['date'], var_name='Category', value_name='users'
         )
     df.replace(0, np.nan, inplace=True)
     df['date'] = pd.to_datetime(df['date'])
+    # Splitting the category column to extract the operator name
     df['operator'] = df['Category'].str.split('_').str.get(2)
     df['operator'].replace('members', 'cabi', inplace=True)
     df['operator'].replace('total', 'dockless', inplace=True)
     df['count'] = df.groupby(['operator']).cumcount()+1
     f, ax = plt.subplots(figsize=(12, 8))
+    # Depricated ts plot does a simple line graph that's easier to work with
+    # then point plot.
     axis = sns.tsplot(
         time='count', value='users', unit='operator', condition='operator',
         data=df, ax=ax,
         color=['red', 'lime', 'grey', 'yellow', 'orange', 'purple', 'black'])
     axis.set_xlim(0, len(df[df['operator'] == 'cabi']))
+    # axis formatting
     axis.xaxis.set_major_locator(ticker.MultipleLocator(10))
     xticks = axis.get_xticks()
     xticks = [

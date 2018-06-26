@@ -30,6 +30,7 @@ if __name__ == '__main__':
 
     # Open google drive connection
     dr = open_drive()
+    # Reshaping the data to derive operators from the category
     df_2 = pd.melt(
         df, id_vars=['date'], var_name='Category',
         value_name='pct_total_trips')

@@ -141,20 +141,7 @@ if __name__ == '__main__':
     all_in_one_save(
         "Daily Trips", load_path, dr,
         google_drive_location)
-    # Active User by Vendor
-    f, axes = plt.subplots(4, 2, sharex='col', sharey='row', figsize=(20, 10))
-    df['dless_users_total'] = df[[
-        'dless_users_jump', 'dless_users_lime', 'dless_users_mobike',
-        'dless_users_ofo', 'dless_users_spin']].sum(axis=1)
-    df['cabi_active_members_total'] = df[[
-        'cabi_active_members_day_key', 'cabi_active_members_monthly',
-        'cabi_active_members_annual']].sum(axis=1)
-    first.settings(user_all, 'month')
-    first.grapher(axes, sns.pointplot)
-    all_in_one_save(
-        "Active User Vendor April", load_path, dr,
-        google_drive_location)
-    # Pct Cabi versus Dockless
+    # Pct Cabi versus Dockless. Casual and total dc to dc trips
     pct_df = df.groupby(['month'])[
         'dless_trips_all', 'cabi_trips_wdc_to_wdc_casual',
         'cabi_trips_wdc_to_wdc'].sum().reset_index()
@@ -172,8 +159,10 @@ if __name__ == '__main__':
         pct_df['cabi_trips_wdc_to_wdc_casual']/(
             pct_df['dless_trips_all'] + pct_df[
                 'cabi_trips_wdc_to_wdc_casual'])*100)
+    # Creating subplots
     f, axes = plt.subplots(1, 2, sharex='col', sharey='row',  figsize=(20, 10))
     width = 0.35
+    # Custom sorting on months
     pct_df['month'] = pd.Categorical(
         pct_df['month'], [
             'September', 'October', 'November', 'December',
@@ -181,6 +170,7 @@ if __name__ == '__main__':
     pct_df.sort_values('month', inplace=True)
     pct_df = pct_df.reset_index()
     pct_df['index'] = pct_df.index.values
+    # Stacked bar chart and making pretty plots
     l1 = axes[0].bar(pct_df['index'], pct_df['cabi_tot'], width)
     l2 = axes[0].bar(
         pct_df['index'], pct_df['dless_tot'], width, bottom=pct_df['cabi_tot'])
@@ -201,6 +191,7 @@ if __name__ == '__main__':
     axes[1].set_title("Cabi Casual Rides vs Dockless", fontsize=12)
     f.legend(
         (r1[0], r2[0]), ('Capital Bikeshare', 'Dockless'), loc='upper left')
+    # Annotating the graph
     for grp in axes:
         for pat in grp.patches:
             h1 = pat.get_height()
@@ -210,7 +201,7 @@ if __name__ == '__main__':
     all_in_one_save(
         "Market Share", load_path, dr,
         google_drive_location)
-    # Pct Cabi versus Dockless
+    # Dockless operator over total dockles trips
     pct_df = df.groupby(['month'])[
         'dless_trips_jump', 'dless_trips_lime', 'dless_trips_mobike',
         'dless_trips_ofo', 'dless_trips_spin', 'dless_trips_all'
@@ -234,7 +225,9 @@ if __name__ == '__main__':
     pct_df['index'] = pct_df.index.values
     f, axes = plt.subplots(1, 1, figsize=(20, 10))
     width = 0.35
-    pct_df.plot.bar(x='index', y=dless_pct, ax=axes, stacked=True, color=['red','lime','gray','yellow','orange'])
+    pct_df.plot.bar(
+        x='index', y=dless_pct, ax=axes, stacked=True,
+        color=['red', 'lime', 'gray', 'yellow', 'orange'])
     axes.set_xticklabels((
         'September', 'October', 'November', 'December', 'January', 'Feburary',
         'March', 'April'), rotation=0)
