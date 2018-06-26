@@ -156,7 +156,7 @@ Figure 8 plots the predicted values and the actual values for the number of CaBi
 ![alt text](./readme_images/Machine_Learning_rf_total.png "")
 
 
-The remainder of our analysis compares our results from our machine learning model to dockless trip data provided by DDOT and therefore cannot include that in our README file here due to NDA restrictions.
+The remainder of our analysis compares our results from our machine learning model to dockless trip data provided by DDOT and therefore we cannot include that analysis here due to NDA restrictions.
 
 ## Acknowledgements
 
