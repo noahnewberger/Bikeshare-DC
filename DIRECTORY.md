@@ -8,17 +8,16 @@
 ├── database           <- Scripts to build the final database to be used for Machine Learning
 │                         and Exploratory Plots
 │
-├── data_dictionary    <- Scripts to annotate PostgreSQL tables and fields and
+├── data_dictionary    <- Scripts to annonate PostgreSQL tables and fields and
 │                         create Data Dictionary in Markdown.
 │
 ├── data_loads         <- Scripts to wrangle and load data source to AWS RDS Instance
 │   └── data           <- Raw Data to be wrangled
 │
 ├── dockless_queries   <- Scripts to provide data validation feedback to DDOT
-│                         regarding quality of dockless data provided.
+│                          regarding quality of dockless data provided.
 │
-├── machine_learning   <- Scripts used to build Machine Learning models
-│   └── visualizations <- Scripts for final ML plots
+├── machine_learning   <- Scripts used to build Machine Learning models 
 │
 ├── maps               <- Scripts used to build Altair Chloropeths of Dockless and CaBi Trip by ANC
 │

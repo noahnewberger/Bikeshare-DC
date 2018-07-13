@@ -11,6 +11,7 @@ _Sebastian Bautista, Travis Gervais, Noah Newberger, and Mark Sussman_
 1. [Capital Bikeshare Exploration](#capital-bikeshare-exploration)
 1. [Machine Learning](#machine-learning)
 1. [Acknowledgements](#acknowledgements)
+1. [References](#references)
 
 ## Abstract
 
@@ -24,9 +25,9 @@ The remainder of this README will walk through our finding that were Capital Bik
 
 ## Background Information
 
-In September 2010,  Capital Bikeshare (CaBi) began operating in the Washington, DC region with 1,100 bikes and 114 stations in Washington, DC and Arlington, VA. Since then CaBi has grown to approximately 437 stations and 4,500 bikes. It has expanded its coverage to include, Alexandria, VA, Montgomery County, MD, and Fairfax County, VA. The system, which sees an average of over 10,000 trips per day, has grown to be the third largest bikeshare system currently operating in the United States.  
+In September 2010,  Capital Bikeshare (CaBi) began operating in the Washington, DC region with 1,100 bikes and 114 stations in Washington, DC and Arlington, VA (Motivate International, Inc, 2017). Since then CaBi has grown to approximately 437 stations and 4,500 bikes. It has expanded its coverage to include, Alexandria, VA, Montgomery County, MD, and Fairfax County, VA. The system, which sees an average of over 10,000 trips per day, has grown to be the third largest bikeshare system currently operating in the United States. 
 
-In September 2017, the DC department of Transportation (DDOT) began a pilot program in Washington, DC which allowed for five dockless bikeshare companies to begin operating in the city. Dockless bikeshare bikes differ notably from CaBi in that the bikes do not need to be taken from or returned to physical docking stations. Instead, the dockless bikes can be left anywhere in the city as long as they are on public property and they are not obstructing roadways or pedestrian walkways. The lack of infrastructural prerequisites meant that seemingly overnight several fleets of brightly colored bikes appeared on the streets. Under regulations established by DDOT for the dockless bikeshare pilot program, each operator is permitted to have a maximum of 400 vehicles on the street at any given time. For the first several months of the pilot program, vehicle was synonymous with bike until electric scooters were introduced and Lime reduced the number of bikes in their fleet in order to increase the number of scooters.  The pilot program presented a unique opportunity to study the effect that the introduction of a new mode of might have on the demand for a well-established bikeshare system. In this paper we use machine learning to predict the demand for CaBi through the duration of the pilot program, and by comparing the predicted demand with the actual demand, we attempt to determine to what extent the dockless bikeshare operators have been able to disrupt the status quo. 
+In September 2017, the DC department of Transportation (DDOT) began a pilot program in Washington, DC which allowed for five dockless bikeshare companies to begin operating in the city (Sturdivant, 2017). Dockless bikeshare bikes differ notably from CaBi in that the bikes do not need to be taken from or returned to physical docking stations. Instead, the dockless bikes can be left anywhere in the city as long as they are on public property and they are not obstructing roadways or pedestrian walkways. The lack of infrastructural prerequisites meant that seemingly overnight several fleets of brightly colored bikes appeared on the streets. Under regulations established by DDOT for the dockless bikeshare pilot program, each operator is permitted to have a maximum of 400 vehicles on the street at any given time (Ryan, 2017). For the first several months of the pilot program, vehicle was synonymous with bike until electric scooters were introduced in March and Lime reduced the number of bikes in their fleet in order to increase the number of scooters (Seher, 2018).  The pilot program presented a unique opportunity to study the effect that the introduction of a new mode of might have on the demand for a well-established bikeshare system. In this paper we use machine learning to predict the demand for CaBi through the duration of the pilot program, and by comparing the predicted demand with the actual demand, we attempt to determine to what extent the dockless bikeshare operators have been able to disrupt the status quo. 
 
 ## Data Sourcing
 
@@ -90,7 +91,7 @@ Diagram 4 shows how we brought all our data sources toget together into a AWS Po
 
 ## Capital Bikeshare Exploration
 
-We began our exploratory analysis by looking at the growth in the CaBi daily trips for from 2011 through 2017. Our goal was to determine the best time frame for our machine learning analysis by identifying when CaBi became well established in Washington, DC. Figure 1 shows that the number of trips per day increased fairly rapidly during the first three to four years of operation. During that time,  X new docking stations were added to the system. Beginning in 2014, the average number of trips taken each day has increased a slower rate, suggesting that the rapid expansion of the earlier years has ended as CaBi has become a fixture within DC’s public transportation system. 
+We began our exploratory analysis by looking at the growth in the CaBi daily trips for from 2011 through 2017. Our goal was to determine the best time frame for our machine learning analysis by identifying when CaBi became well established in Washington, DC. Figure 1 shows that the number of trips per day increased fairly rapidly during the first four years of operation. During that time, approximately 222 new docking stations were added to the system. Beginning in 2014, the average number of trips taken each day has increased a slower rate, suggesting that the rapid expansion of the earlier years has ended as CaBi has become a fixture within DC’s public transportation system.
 
 **Figure 1:** Average daily CaBi Trips by Year (Left: System Wide, Right: DC to DC trips)
 ![alt text](./readme_images/Capital_Bikeshare_Exploration_DailyCabiTrips.png "")
@@ -121,21 +122,38 @@ For our analysis, we use two competing machine learning models. In our models an
 
 #### Lasso
 
-We identified 18 features that we believed would be important to incorporate into our model. These features included daylight hours, apparent high temperature, U.S. holidays, and Washington Nationals games. We decided to use a smaller feature set with the Lasso model in order to minimize the chances of including collinear variables as features in our model. Multicollinearity among explanatory features in a linear model can have detrimental effects on coefficient estimates. We also wanted to drop features that we believed would not contribute to the predictive power of our model, such as the duration that CaBi stations in Alexandria were full on a given day.  We also dropped some features because of leakage issues - for example, some of our features are related to the duration that CaBi stations are empty or full in each day. Although these features are extremely predictive of CaBi trips, trips and empty duration are simultaneously co-determined, so we drop these features because of endogeneity issues.
+We identified 18 features that we believed would be important to incorporate into our model. These features included daylight hours, apparent high temperature, U.S. holidays, and Washington Nationals games. We decided to use a smaller feature set with the Lasso model in order to minimize the chances of including collinear variables as features in our model. Multicollinearity among explanatory features in a linear model can have detrimental effects on coefficient estimates. We also dropped some features because of leakage issues - for example, some of our features are related to the duration that CaBi stations are empty or full in each day. Although these features are extremely predictive of CaBi trips, trips and empty duration are simultaneously co-determined, so we drop these features because of endogeneity issues.
 
-Next, we preprocessed the data. In order to incorporate data from multiple years into our model, we performed cyclical encoding on the day of year to ensure continuity between December and January. We used PolynomialFeatures to create quadratic and interaction terms that we could incorporate into our model.   This introduced complexity to the model by ultimately turning our 18 features into 180 features. Creating interaction terms for our analysis was an important step because we believed that combinations of certain variables could have different impacts on CaBi demand, and these terms allow for a more complex linear relationship between our features and target variable.  For example, behavior might differ between a cold day with rain and a warm day with rain. We dropped any quadratic variables that were redundant such as those created from our binary features, e.g. U.S. holiday squared. We also standardized our continuous variables by passing them through StandardScaler so that they would all have a mean of 0 and standard deviation of 1. For our binary features, we used MinMaxScaler to ensure that if any changes were made to those features when we applied PolynomialFeatures to them, they would be returned to 0 and 1. 
-
-We used the Rank2D visualizer from the Yellowbrick package in order to visualize which of our 18 features had the strongest correlation. Not surprisingly, variables like daylight and apparent high temperature were positively correlated. Figure 5 shows a Pearson ranking of the 18 features that were selected for the lasso model (before applying PolynomialFeatures). 
+Next, we preprocessed the data. In order to incorporate data from multiple years into our model, we performed cyclical encoding on the day of year to ensure continuity between December and January. Figure 5 shows a ranking of feature importance for the 18 features that were selected for the lasso model when we ran it initially, without including any polynomial variables or interaction terms in the model. We did not achieve a good fit due to the model’s simplicity, however because of this simplicity it is easier to identify the explanatory power of each variable. For example, apparent high temperature had the strongest positive effect on the number of CaBi trips while whether or not the day was a US holiday had the strongest negative effect. Intuitively, this makes sense that as temperature rises so do the number of CaBi trips. It also seems intuitive that the CaBi system would see fewer rides on US holidays due to the absence of commuters.
 
 **Figure 5**: Pearson Ranking of 18 Features Incorporated into Lasso Model
 ![alt text](./readme_images/Machine_Learning_lasso_rank2d.png "")
 
-In order to fit our model, we used 5-fold cross-validation and an alpha search space of 250 logarithmically spaced points between .01 and 10.  The highest performance we got from the lasso model had an alpha of approximately 4.6 and a mean R2 value of 0.852 with a standard deviation of 0.0175. The model tended to over-predict the number of CaBi rides taken per day which is evidenced by the sum of the residuals being negative. Figure 6 shows a ranking of feature importances for the 18 features that were selected for the lasso model. The three features that had the strongest positive correlation for the number of CaBi trips were apparent high temperature, DC population and whether or not there was a Washington Nationals doubleheader happening on that day. Surprisingly rain had a slight positive correlation. One possible explanation is that rain might be less likely to discourage usage on warmer summer days and that is enough to counterbalance a cold rainy day.  The three features with the greatest negative correlation were US holiday, precipitation probability and the humidity. It makes sense that US holidays would see fewer rides as there would be less usage due to the absence of commuters.
+We used the Rank2D visualizer from the Yellowbrick package in order to visualize which of our 18 features had the strongest correlation. Not surprisingly, variables like daylight and apparent high temperature were positively correlated. Figure 6 shows a simplified Pearson ranking of the 18 features that were selected for the lasso model before applying PolynomialFeatures. It does not show all of the 180 features that were used in our final model after creating the interaction terms and polynomial features.  
 
 **Figure 6**: Feature Importance of 18 Features Selected for Lasso Model
 ![alt text](./readme_images/Machine_Learning_lasso_featureimportances18.png "")
 
-![alt text](./readme_images/Machine_Learning_lasso_resplot.png "")
+In order to improve the fit of our Lasso model, we had to increase its complexity. This was achieved by using PolynomialFeatures to create quadratic and interaction terms that we could incorporate into our model to introduce complexity by increasing the number of features in our model to 180. We initially tried using PolynomialFeatures of orders 2 and 3, but ultimately found that PolynomialFeatures(2) was most performant.   Creating interaction terms for our analysis was an important step because we believed that combinations of certain variables could have different impacts on CaBi demand, and these terms allow for a more complex linear relationship between our features and target variable.  For example, behavior might differ between a cold day with rain and a warm day with rain. We dropped any quadratic variables that were redundant such as those created from our binary features, e.g. U.S. holiday squared. We also standardized our continuous variables by passing them through StandardScaler so that they would all have a mean of 0 and standard deviation of 1. For our binary features, we used MinMaxScaler to ensure that if any changes were made to those features when we applied PolynomialFeatures to them, they would be returned to 0 and 1. 
+
+In order to fit our model, we used 5-fold cross-validation and an alpha search space of 250 logarithmically spaced points between .01 and 10.  The highest performance we got from the lasso model had an alpha of approximately 4.6 and a mean R<sup>2</sup> value of 0.852 with a standard deviation of 0.0175. The model tended to over-predict the number of CaBi rides taken per day which is evidenced by the sum of the residuals being negative. Table 1 shows a ranking of feature importance for the top 10 features out of the 75 that were selected for the lasso model. The interpretation of these feature interactions is difficult due to the increased complexity of the model. However, there is cross-over between several of the features that were identified as important in our simplified model and features that were incorporated into the more complicated Lasso model, suggesting that these may be important. Features such as apparent high temperature, population, humidity and precipitation probability appear on both lists.
+
+**Table 1**: Importance of Top 10 Features and Interaction Terms 
+
+Feature Interaction |0 | Sorted 
+--- | ---: | ---:
+apparenttemperaturehigh - dc_pop | 2,400 | 2,400
+dc_pop- cos_day_of_year | -2,266 | 2,266
+daylight_hours - cos_day_of_year | 1,422 | 1,422
+visibility - cos_day_of_year | -1,254 | 1,254
+apparenttemperaturehigh - sin_day_of_year | 1,252 | 1,252
+apparenttemperaturehigh^2 | 1,242 | 1,242
+apparenttemperaturehigh - cos_day_of_year | 1,121 | 1,121
+humidity - precipprobability | 1,003 | 1,003
+visibility - sin_day_of_year | -732  |  732
+precipprobability - visibility | 588 | 588
+
+
 
 #### Random Forest
 
@@ -144,9 +162,7 @@ We wanted to experiment with a nonlinear regression method since we had already 
 **Figure 7**: Feature Importance of 49 Features Selected for Random Forest Model
 ![alt text](./readme_images/Machine_Learning_rf_featureimportances.png "")
 
-In order to tune our hyperparameters for this model, we used RandomizedSearchCV with 100 iterations per fold to identify which hyperparameters to tune. There were 5,760 unique combinations of hyperparameters that were possible through the randomized search, and we tried 100. After confirming that this new model performed better than the untuned model, we used GridSearchCV with a smaller set of hyperparameters to then select the most performant combination. After performing 5-fold shuffled cross-validation we achieved a mean R2 value of 0.902 with a standard deviation of 0.007. This model also tended to overpredict the number of CaBi rides.
-
-![alt text](./readme_images/Machine_Learning_rf_resplot.png "")
+In order to tune our hyperparameters for this model, we used RandomizedSearchCV to identify which hyperparameters to tune. There were 5,760 unique combinations of hyperparameters possible through the randomized search, and we tried 100 iterations over 5 folds. After confirming that this new model performed better than the untuned model, we used GridSearchCV with a smaller set of hyperparameters to then select the most performant combination. After performing 5-fold shuffled cross-validation we achieved a mean R<sup>2</sup> value of 0.902 with a standard deviation of 0.007. This model also tended to overpredict the number of CaBi rides. 
 
 #### Results
 
@@ -161,5 +177,17 @@ The remainder of our analysis compares our results from our machine learning mod
 ## Acknowledgements
 
 We'd like to thank Stefanie Brodie, Kim Lucas, and Jonathan Rodgers at the District Department of Transportation for sharing their dockless pilot and Capital Bikeshare data and domain expertise with us.  We'd also like to thank Daniel Schep for sharing his dockless API data with us.  Without his visionary software engineering, we wouldn't have been able to compare CaBi utilization rates with those of the dockless operators.
+
+## References
+
+Heining, A. (2017, September 22). We tried all four of D.C.'s dockless bike-share systems. Here's our review. Retrieved March/April, 2018, from https://www.washingtonpost.com/news/dr-gridlock/wp/2017/09/22/we-rode-all-four-of-d-c-s-dockless-bike-share-so-you-wouldnt-have-to/?noredirect=on&utm_term=.d8f7131bfc37
+
+Motivate International, Inc. (2017). Press Kit. Retrieved February/March, 2018, from https://www.capitalbikeshare.com/press-kit
+
+Ryan, K. (2013, October 23). How dockless bikes stack up against Capital Bikeshare in DC. Retrieved March/April, 2018, from https://wtop.com/dc/2017/12/dock-less-bikes-stack-capital-bikeshare-dc/slide/1/
+
+Seher, C. (2018, March 13). It's Monumental: LimeBike's Lime-S Electric Scooters Now Available in DC. Retrieved from https://www.limebike.com/blog/its-monumental-limebikes-lime-s-electric-scooters-now-available-in-dc
+
+Sturdivant, C. (2017, September 19). Dockless Bikeshare Program Rolls Out In D.C. On Wednesday. Retrieved from http://dcist.com/2017/09/dockless_bikeshare_dc.php
 
 
