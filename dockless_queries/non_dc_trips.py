@@ -1,10 +1,12 @@
 ﻿import pandas as pd
+import sys
+sys.path.append("..")
 import util_functions as uf
 
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
-    conn, cur = uf.aws_connect()
+    conn, cur = uf.local_connect()
 
     # Determine trips by operator that start or end outside DC
     df = pd.read_sql("""select distinct

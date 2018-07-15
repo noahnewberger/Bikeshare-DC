@@ -1,12 +1,14 @@
 import pandas as pd
-import util_functions as uf
 import matplotlib.pyplot as plt
+import sys
+sys.path.append("..")
+import util_functions as uf
 
 
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
-    conn, cur = uf.aws_connect()
+    conn, cur = uf.local_connect()
 
     '''
     Percentage of Total Rides: Dockless vs. CaBi (Total and CaBI)
@@ -32,13 +34,13 @@ if __name__ == "__main__":
                         where dless_trips_all > 0 and date > '2017-09-10';
                      """, con=conn)
 
-    total_df = df[['date', "Total CaBi DC to DC", "Total Dockless Trips"]]
-    casual_df = df[['date', "Total CaBi DC to DC, Casual", "Total Dockless Trips"]]
+    total_df = df[['date', "Total CaBi DC to DC", "Total Dockless Trips"]].sort_values('date')
+    print(total_df.head())
 
-    for df in [total_df, casual_df]:
+    for df in [total_df]:
         # Plot Style
-        plt.style.use('seaborn-darkgrid')
-        plt.figure(figsize=(20, 10))
+        # plt.style.use('seaborn-darkgrid')
+        plt.figure(figsize=(15, 10))
         # multiple line plot
         for column in df[[col for col in df if col != "Total Dockless Trips"]].drop('date', axis=1):
             plt.plot(df['date'], df[column], marker='', linewidth=1, alpha=0.4)

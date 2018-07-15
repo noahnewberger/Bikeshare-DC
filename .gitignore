@@ -40,3 +40,7 @@ machine_learning/lasso_total_impact\.png
 machine_learning/rf_casual_impact\.png
 
 machine_learning/rf_total_impact\.png
+
+final_plots/cabi_dless_market\.png
+
+*.png

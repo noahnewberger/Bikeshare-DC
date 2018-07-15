@@ -1,4 +1,6 @@
 import pandas as pd
+import sys
+sys.path.append("../..")
 import util_functions as uf
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -8,19 +10,19 @@ import matplotlib.dates as mdates
 if __name__ == "__main__":
     # Connect to AWS
     uf.set_env_path()
-    conn, cur = uf.aws_connect()
+    conn, cur = uf.local_connect()
     '''
     Dockless Impact Derived from Machine Learning Model
     [[PLOT]]
     '''
-    models = ['rf_total', 'rf_casual', 'lasso_casual', 'lasso_total']
+    models = ['lasso_total']
     for model in models:
         df = pd.read_sql("""select
                             *
                             from """ + model + """;
                          """, con=conn)
         # Scatter Plot with Reg Line
-        fig, ax = plt.subplots(figsize=(20, 10))
+        fig, ax = plt.subplots(figsize=(10, 10))
         df['plot_date'] = mdates.date2num(df['date'])
         sns.regplot(x='plot_date', y='dless_impact', data=df, ax=ax, scatter_kws={'alpha': 0.3})
         # Assign locator and formatter for the xaxis ticks.

@@ -122,17 +122,16 @@ if __name__ == '__main__':
 
     g = sns.factorplot(
         x='day_of_week', y='trips_standardized',
-        hue='op_status', col='member_type', data=df, kind='bar',
-        palette='muted', col_order=['Member', 'Casual', 'Dockless'],
-        legend=False, size=4, aspect=1)
+        hue='op_status', row='member_type', data=df, kind='bar',
+        palette='muted', row_order=['Member', 'Casual', 'Dockless'],
+        legend=False, size=4, aspect=2)
     g.set_xticklabels(
             ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
             fontsize=8)
     g.set_xlabels('Day of the Week', fontsize=10)
     g.set_ylabels('Standarized Trips', fontsize=10)
-    # g.fig.legend(loc='center', title='Service Block')
     # resize figure box to -> put the legend out of the figure
-    plt.legend(bbox_to_anchor=(-0.05, -0.2), borderaxespad=0., ncol=3, title='Service Block')
-    g.savefig("hours.png")
+    plt.legend(bbox_to_anchor=(0.75, -0.2), borderaxespad=0., ncol=3, title='Service Block')
+    g.savefig("hours_vertical.png")
     sys.exit()
 
