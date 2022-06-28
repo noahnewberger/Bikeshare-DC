@@ -1,5 +1,5 @@
 altair==2.1.0
-arrow==0.12.1
+arrow==0.15.1
 asn1crypto==0.24.0
 awscli==1.14.58
 beautifulsoup4==4.6.0
